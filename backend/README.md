@@ -1,94 +1,155 @@
-# Jignesh Node.js Test
+# E-commerce Backend API
 
-## Description
+This is the backend API for the E-commerce website, built with Node.js, Express, and MongoDB.
 
-This project is a RESTful API for a Multi-functional Product Management and Order System, built using Node.js, Express, and MongoDB. It includes features for product management, order handling, user authentication, and email notifications.
+## Project Structure
+
+```
+backend/
+├── Controllers/     # Request handlers
+├── Middlewares/    # Custom middleware functions
+├── Models/         # Database models
+├── Routers/        # API routes
+├── Utils/          # Utility functions
+├── Constants/      # Constant values
+├── Databases/      # Database configuration
+├── seeds/          # Database seed data
+├── public/         # Static files
+└── index.js        # Application entry point
+```
 
 ## Features
 
-### **Product Management**
+- RESTful API architecture
+- JWT-based authentication
+- Role-based access control (Admin/User)
+- File upload handling
+- Error handling middleware
+- Input validation
+- Database seeding
+- API documentation (Postman collection)
 
-- Add new products with images.
-- Update product details.
-- List products with filtering, pagination, and sorting.
-- Add reviews and display average ratings.
+## Prerequisites
 
-### **Order Management**
-
-- Place new orders with validation.
-- Update order status.
-- Retrieve specific orders with product details and total price.
-- List orders with filtering and pagination.
-
-### **Authentication & Security**
-
-- JWT-based authentication for protected routes.
-- Input validation and error handling.
-
-### **Additional Features**
-
-- Image uploads using Multer.
-- Nodemailer for email notifications.
+- Node.js (v14 or higher)
+- MongoDB
+- npm or yarn
 
 ## Installation
 
-### **Prerequisites**
+1. Clone the repository
 
-- Node.js (v16 or later)
-- MongoDB (installed locally or a cloud-based instance)
+```bash
+git clone [repository-url]
+cd backend
+```
 
-### **Steps to Install and Run**
+2. Install dependencies
 
-1. Clone the repository:
+```bash
+npm install
+```
 
-   ```sh
-   git clone https://github.com/yourusername/jignesh_nodejs_test.git
-   cd jignesh_nodejs_test
-   ```
+3. Create a `config.env` file in the root directory with the following variables:
 
-2. Install dependencies:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+SMTP_HOST=your_smtp_host
+SMTP_PORT=your_smtp_port
+SMTP_USER=your_email
+SMTP_PASS=your_email_password
+```
 
-   ```sh
-   npm install
-   ```
+## Running the Application
 
-3. Create a `.env` file and configure the following variables:
+### Development Mode
 
-   ```env
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_secret_key
-   SMTP_HOST=your_smtp_host
-   SMTP_PORT=your_smtp_port
-   SMTP_USER=your_email
-   SMTP_PASS=your_email_password
-   ```
+```bash
+npm run dev
+```
 
-4. Start the server:
-   ```sh
-   npm start
-   ```
+### Production Mode
+
+```bash
+npm start
+```
 
 ## API Endpoints
 
-### **Product Management**
+### Authentication
 
-- `POST /api/products` - Add a new product.
-- `PATCH /api/products/:id` - Update product details.
-- `GET /api/products` - List products with filtering, sorting, and pagination.
-- `POST /api/products/:id/reviews` - Add a review to a product.
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/forgot-password` - Request password reset
+- `PATCH /api/auth/reset-password/:token` - Reset password
 
-### **Order Management**
+### Products
 
-- `POST /api/orders` - Place a new order.
-- `PATCH /api/orders/:id` - Update order status.
-- `GET /api/orders/:id` - Retrieve order details.
-- `GET /api/orders` - List all orders with filtering and pagination.
+- `GET /api/products` - Get all products
+- `GET /api/products/:id` - Get a specific product
+- `POST /api/products` - Create a new product (Admin only)
+- `PATCH /api/products/:id` - Update a product (Admin only)
+- `DELETE /api/products/:id` - Delete a product (Admin only)
 
-### **Authentication**
+### Orders
 
-- `POST /api/auth/register` - Register a new user.
-- `POST /api/auth/login` - User login and JWT token issuance.
+- `GET /api/orders` - Get all orders
+- `GET /api/orders/:id` - Get a specific order
+- `POST /api/orders` - Create a new order
+- `PATCH /api/orders/:id` - Update order status (Admin only)
+
+3. Create a `.env` file and configure the following variables:
+
+- `GET /api/users` - Get all users (Admin only)
+- `GET /api/users/:id` - Get user profile
+- `PATCH /api/users/:id` - Update user profile
+- `DELETE /api/users/:id` - Delete user (Admin only)
+
+## API Documentation
+
+A complete Postman collection is available at `Test.postman_collection.json`. Import this file into Postman to test all endpoints.
+
+## Error Handling
+
+The API uses a centralized error handling system. All errors are returned in the following format:
+
+```json
+{
+  "status": "error",
+  "message": "Error message",
+  "error": {
+    "code": "ERROR_CODE",
+    "details": "Additional error details"
+  }
+}
+```
+
+## Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. To access protected routes:
+
+1. Login to get a token
+2. Include the token in the Authorization header:
+   ```
+   Authorization: Bearer <your_token>
+   ```
+
+## File Upload
+
+File uploads are handled using Multer. Supported file types:
+
+- Images (jpg, jpeg, png)
+- Maximum file size: 5MB
+
+## Database Seeding
+
+To populate the database with sample data:
+
+```bash
+npm run seed
+```
 
 ## Technologies Used
 
@@ -102,12 +163,12 @@ This project is a RESTful API for a Multi-functional Product Management and Orde
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the ISC License.
-
-## Author
-
-[Jigneshsingh Kushvaha](https://github.com/Jigneshsingh-growexxer)
+This project is licensed under the MIT License.
