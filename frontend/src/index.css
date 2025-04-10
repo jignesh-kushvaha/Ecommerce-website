@@ -39,27 +39,31 @@ body {
 }
 
 /* Custom message notification styles */
-.custom-message {
-  @apply rounded-lg shadow-lg;
+.ant-message {
+  @apply fixed top-4 left-1/2 transform -translate-x-1/2 z-50;
 }
 
-.custom-message .ant-message-notice-content {
+.ant-message-notice {
+  @apply mb-4;
+}
+
+.ant-message-notice-content {
   @apply rounded-lg shadow-lg py-3 px-4;
 }
 
-.custom-message .ant-message-success {
+.ant-message-success {
   @apply bg-green-50 text-green-800;
 }
 
-.custom-message .ant-message-warning {
+.ant-message-warning {
   @apply bg-yellow-50 text-yellow-800;
 }
 
-.custom-message .ant-message-error {
+.ant-message-error {
   @apply bg-red-50 text-red-800;
 }
 
-.custom-message .ant-message-info {
+.ant-message-info {
   @apply bg-blue-50 text-blue-800;
 }
 

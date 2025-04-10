@@ -1,9 +1,11 @@
-import { Button, InputNumber, Card, message } from "antd";
+import { Button, InputNumber, Card } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useCart } from "../../context/CartContext";
+import { useMessage } from "../../context/MessageContext";
 
 const CartItem = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
+  const message = useMessage();
 
   const handleQuantityChange = (value) => {
     updateQuantity(item.id, value);
@@ -11,16 +13,13 @@ const CartItem = ({ item }) => {
 
   const handleRemove = () => {
     removeFromCart(item.id);
-    message.success({
-      content: (
-        <div className="flex items-center">
-          <DeleteOutlined className="mr-2 text-lg" />
-          <span>Item removed from cart</span>
-        </div>
-      ),
-      duration: 2,
-      className: "custom-message",
-    });
+    message.success(
+      <div className="flex items-center">
+        <DeleteOutlined className="mr-2 text-lg" />
+        <span>Item removed from cart</span>
+      </div>,
+      2
+    );
   };
 
   return (

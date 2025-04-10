@@ -1,46 +1,41 @@
-import { Card, Button, Rate, message } from "antd";
+import { Card, Button, Rate } from "antd";
 import { ShoppingCartOutlined, EyeOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import { useMessage } from "../../context/MessageContext";
 
 const { Meta } = Card;
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const message = useMessage();
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      message.warning({
-        content: "Please login to add items to your cart",
-        duration: 2,
-        className: "custom-message",
-      });
+      message.warning("Please login to add items to your cart", 2);
       navigate("/login");
       return;
     }
     addToCart(product);
-    message.success({
-      content: (
-        <div className="flex items-center">
-          <ShoppingCartOutlined className="mr-2 text-lg" />
-          <span>
-            <strong>{product.name}</strong> added to cart!
-          </span>
-        </div>
-      ),
-      duration: 3,
-      className: "custom-message",
-    });
+    message.success(
+      <div className="flex items-center">
+        <ShoppingCartOutlined className="mr-2 text-lg" />
+        <span>
+          <strong>{product.name}</strong> added to cart!
+        </span>
+      </div>,
+      3
+    );
   };
 
   // Fallback image in case product images are missing
   const imageUrl =
     product.images && product.images.length
       ? product.images[0]
-      : "https://via.placeholder.com/300x300?text=No+Image";
+      : "https://via.placeholder.com/300x300";
 
   return (
     <Card

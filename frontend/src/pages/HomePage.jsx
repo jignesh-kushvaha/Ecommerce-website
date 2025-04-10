@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, Carousel, Card, Row, Col, Typography, Spin } from "antd";
+import {
+  Button,
+  Carousel,
+  Card,
+  Row,
+  Col,
+  Typography,
+  Spin,
+  Divider,
+} from "antd";
 import { Link } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import * as productService from "../services/productService";
