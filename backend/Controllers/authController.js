@@ -6,7 +6,7 @@ import { catchAsync } from "../Utils/catchAsync.js";
 import AppError from "../Utils/appError.js";
 
 export const register = catchAsync(async (req, res, next) => {
-  const { name, email, password, userType } = req.body;
+  const { name, email, password, userType, phoneNumber, address } = req.body;
 
   const user = await Users.findOne({ email });
 
@@ -21,6 +21,8 @@ export const register = catchAsync(async (req, res, next) => {
     email,
     password: hashedPassword,
     userType,
+    phoneNumber,
+    address,
   });
 
   res.status(201).json({
@@ -32,6 +34,8 @@ export const register = catchAsync(async (req, res, next) => {
         name: newUser.name,
         email: newUser.email,
         userType: newUser.userType,
+        phoneNumber: newUser.phoneNumber,
+        address: newUser.address,
       },
     },
   });

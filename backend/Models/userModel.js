@@ -18,6 +18,37 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please provide a password"],
     minlength: 4,
   },
+  phoneNumber: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        return /^(\+\d{1,3}[- ]?)?\d{10}$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+  },
+  address: {
+    street: {
+      type: String,
+      default: "",
+    },
+    city: {
+      type: String,
+      default: "",
+    },
+    state: {
+      type: String,
+      default: "",
+    },
+    country: {
+      type: String,
+      default: "",
+    },
+    postalCode: {
+      type: String,
+      default: "",
+    },
+  },
   userType: {
     type: String,
     enum: ["admin", "customer"],
