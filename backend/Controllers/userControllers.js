@@ -10,6 +10,12 @@ export const updateProfile = catchAsync(async (req, res) => {
     updateData.address = { ...req.user.address, ...updateData.address };
   }
 
+  // Handle file upload
+  if (req.file) {
+    // File path relative to the server
+    updateData.profileImage = `/uploads/${req.file.filename}`;
+  }
+
   const updatedUser = await Users.findByIdAndUpdate(req.user._id, updateData, {
     new: true,
     runValidators: true,

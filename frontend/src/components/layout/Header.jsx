@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Badge, Drawer, Button } from "antd";
+import { Menu, Badge, Drawer, Button, Dropdown } from "antd";
 import {
   ShoppingCartOutlined,
   UserOutlined,
   MenuOutlined,
+  DownOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
@@ -23,6 +25,29 @@ const Header = () => {
     logout();
     navigate("/login");
   };
+
+  const profileMenuItems = [
+    {
+      key: "profile",
+      label: <Link to="/profile">My Profile</Link>,
+      icon: <UserOutlined />,
+    },
+    {
+      key: "changePassword",
+      label: <Link to="/profile?tab=password">Change Password</Link>,
+      icon: <KeyOutlined />,
+    },
+    {
+      key: "divider",
+      type: "divider",
+    },
+    {
+      key: "logout",
+      label: "Logout",
+      danger: true,
+      onClick: handleLogout,
+    },
+  ];
 
   return (
     <header className="bg-white shadow-md">
@@ -52,9 +77,16 @@ const Header = () => {
             </Link>
           )}
           {isAuthenticated ? (
-            <Button type="text" onClick={handleLogout}>
-              Logout
-            </Button>
+            <Dropdown
+              menu={{ items: profileMenuItems }}
+              placement="bottomRight"
+            >
+              <Button type="text" className="flex items-center">
+                <UserOutlined className="text-lg mr-1" />
+                My Account
+                <DownOutlined className="ml-1 text-xs" />
+              </Button>
+            </Dropdown>
           ) : (
             <Link to="/login" className="text-gray-700 hover:text-blue-500">
               <UserOutlined className="mr-1" /> Login
@@ -125,9 +157,29 @@ const Header = () => {
             </Menu.Item>
           )}
           {isAuthenticated ? (
-            <Menu.Item key="logout" onClick={handleLogout}>
-              Logout
-            </Menu.Item>
+            <>
+              <Menu.Item
+                key="profile"
+                onClick={() => {
+                  navigate("/profile");
+                  toggleMenu();
+                }}
+              >
+                My Profile
+              </Menu.Item>
+              <Menu.Item
+                key="changePassword"
+                onClick={() => {
+                  navigate("/profile?tab=password");
+                  toggleMenu();
+                }}
+              >
+                Change Password
+              </Menu.Item>
+              <Menu.Item key="logout" onClick={handleLogout}>
+                Logout
+              </Menu.Item>
+            </>
           ) : (
             <Menu.Item
               key="login"

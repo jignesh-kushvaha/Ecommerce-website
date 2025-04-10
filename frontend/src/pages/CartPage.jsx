@@ -37,7 +37,7 @@ const CartPage = () => {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
           <Link to="/products">
-            <Button type="primary" className="mt-4">
+            <Button type="primary" className="mt-4 px-6">
               Continue Shopping
             </Button>
           </Link>
@@ -82,12 +82,18 @@ const CartPage = () => {
                 icon={<CreditCardOutlined />}
                 block
                 onClick={handleCheckout}
-                className="mb-4 h-12 text-base font-medium bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 border-blue-600 shadow-md transition-all duration-300 transform hover:scale-[1.02]"
+                className="mb-4 h-12 text-base font-medium shadow-md hover:shadow-lg"
               >
                 Proceed to Checkout
               </Button>
 
-              <Button type="default" danger block onClick={clearCart}>
+              <Button
+                type="default"
+                danger
+                block
+                onClick={clearCart}
+                className="border border-red-400 hover:bg-red-50"
+              >
                 Clear Cart
               </Button>
 

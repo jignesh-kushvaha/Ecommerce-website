@@ -1,4 +1,4 @@
-import { Button, InputNumber, Card } from "antd";
+import { Button, InputNumber, Card, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useCart } from "../../context/CartContext";
 
@@ -11,10 +11,20 @@ const CartItem = ({ item }) => {
 
   const handleRemove = () => {
     removeFromCart(item.id);
+    message.success({
+      content: (
+        <div className="flex items-center">
+          <DeleteOutlined className="mr-2 text-lg" />
+          <span>Item removed from cart</span>
+        </div>
+      ),
+      duration: 2,
+      className: "custom-message",
+    });
   };
 
   return (
-    <Card className="mb-4 shadow-sm">
+    <Card className="mb-4 shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex flex-col sm:flex-row">
         <div className="w-full sm:w-24 h-24 overflow-hidden bg-gray-100 mb-4 sm:mb-0 sm:mr-4">
           <img
@@ -44,10 +54,11 @@ const CartItem = ({ item }) => {
             </span>
 
             <Button
-              type="text"
+              type="default"
               danger
               icon={<DeleteOutlined />}
               onClick={handleRemove}
+              className="border border-red-300 hover:bg-red-50 hover:border-red-500"
             >
               Remove
             </Button>

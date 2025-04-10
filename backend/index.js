@@ -8,10 +8,16 @@ import dotenv from "dotenv";
 import globalErrorHandler from "./Middlewares/errorMiddleware.js";
 import AppError from "./Utils/appError.js";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config({
   path: "./config.env",
 });
+
+// Get directory name in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 connectDb();
 const app = express();
@@ -25,6 +31,9 @@ app.use(
 );
 
 app.use(express.json());
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);

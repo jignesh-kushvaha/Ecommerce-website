@@ -12,6 +12,7 @@ import RegisterPage from "./pages/RegisterPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
                 <Route path="orders/:id" element={<OrderDetailPage />} />
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
+                <Route path="profile" element={<UserProfilePage />} />
               </Route>
             </Routes>
           </CartProvider>

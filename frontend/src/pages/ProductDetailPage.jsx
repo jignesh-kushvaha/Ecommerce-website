@@ -65,14 +65,32 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      message.info("Please login to add items to cart");
+      message.warning({
+        content: "Please login to add items to your cart",
+        duration: 2,
+        className: "custom-message",
+      });
       navigate("/login");
       return;
     }
 
     if (product && quantity > 0) {
       addToCart(product, quantity);
-      message.success("Product added to cart");
+      message.success({
+        content: (
+          <div className="flex items-center">
+            <ShoppingCartOutlined className="mr-2 text-lg" />
+            <span>
+              <strong>
+                {quantity} x {product.name}
+              </strong>{" "}
+              added to cart successfully!
+            </span>
+          </div>
+        ),
+        duration: 3,
+        className: "custom-message",
+      });
     }
   };
 
@@ -208,7 +226,7 @@ const ProductDetailPage = () => {
             icon={<ShoppingCartOutlined />}
             onClick={handleAddToCart}
             disabled={product.stock === 0}
-            className="bg-blue-500 hover:bg-blue-600 w-full md:w-auto"
+            className="w-full md:w-auto"
           >
             Add to Cart
           </Button>
@@ -288,6 +306,7 @@ const ProductDetailPage = () => {
                         type="primary"
                         htmlType="submit"
                         loading={reviewSubmitting}
+                        className="w-full md:w-auto"
                       >
                         Submit Review
                       </Button>

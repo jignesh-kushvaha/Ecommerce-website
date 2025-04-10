@@ -13,14 +13,26 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      message.info("Please login to add items to cart");
+      message.warning({
+        content: "Please login to add items to your cart",
+        duration: 2,
+        className: "custom-message",
+      });
       navigate("/login");
       return;
     }
     addToCart(product);
     message.success({
-      content: `${product.name} added to cart successfully!`,
-      duration: 2,
+      content: (
+        <div className="flex items-center">
+          <ShoppingCartOutlined className="mr-2 text-lg" />
+          <span>
+            <strong>{product.name}</strong> added to cart!
+          </span>
+        </div>
+      ),
+      duration: 3,
+      className: "custom-message",
     });
   };
 
@@ -33,7 +45,7 @@ const ProductCard = ({ product }) => {
   return (
     <Card
       hoverable
-      className="h-full flex flex-col"
+      className="h-full flex flex-col transition-all duration-300 hover:shadow-lg"
       cover={
         <div className="h-48 overflow-hidden bg-gray-100">
           <img
@@ -45,12 +57,19 @@ const ProductCard = ({ product }) => {
       }
       actions={[
         <Link to={`/products/${product._id}`} key="view">
-          <EyeOutlined /> View
+          <Button
+            type="default"
+            className="flex items-center mx-auto border border-gray-300"
+            icon={<EyeOutlined />}
+          >
+            View
+          </Button>
         </Link>,
         <Button
-          type="link"
+          type="primary"
           onClick={handleAddToCart}
           key="addToCart"
+          className="flex items-center mx-auto"
           icon={<ShoppingCartOutlined />}
         >
           Add to Cart

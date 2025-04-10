@@ -10,15 +10,23 @@ body {
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-md transition-all duration-200 cursor-pointer;
+    @apply px-4 py-2 rounded-md transition-all duration-200 cursor-pointer font-medium;
   }
 
   .btn-primary {
-    @apply bg-blue-500 text-white hover:bg-blue-600;
+    @apply bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transform hover:scale-[1.02] border-0;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300 shadow-sm hover:shadow border border-gray-300;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg border-0;
+  }
+
+  .btn-success {
+    @apply bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg border-0;
   }
 
   .form-input {
@@ -28,4 +36,41 @@ body {
   .card {
     @apply bg-white p-6 rounded-lg shadow-md;
   }
+}
+
+/* Custom message notification styles */
+.custom-message {
+  @apply rounded-lg shadow-lg;
+}
+
+.custom-message .ant-message-notice-content {
+  @apply rounded-lg shadow-lg py-3 px-4;
+}
+
+.custom-message .ant-message-success {
+  @apply bg-green-50 text-green-800;
+}
+
+.custom-message .ant-message-warning {
+  @apply bg-yellow-50 text-yellow-800;
+}
+
+.custom-message .ant-message-error {
+  @apply bg-red-50 text-red-800;
+}
+
+.custom-message .ant-message-info {
+  @apply bg-blue-50 text-blue-800;
+}
+
+/* Override Ant Design button styles */
+.ant-btn-primary {
+  background-color: #1a56db !important;
+  border-color: #1a56db !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #1e429f !important;
+  border-color: #1e429f !important;
 }
