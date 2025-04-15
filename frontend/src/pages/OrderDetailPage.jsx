@@ -44,8 +44,6 @@ const OrderDetailPage = () => {
       try {
         setLoading(true);
         const response = await orderService.getOrder(id);
-        console.log(response.data);
-
         if (response?.data) {
           setOrder(response.data);
         } else {

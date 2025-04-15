@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import * as authService from "../services/authService";
+import { getProfile } from "../services/userService";
 
 const AuthContext = createContext();
 
@@ -13,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const initAuth = () => {
+    const initAuth = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
@@ -27,6 +28,20 @@ export const AuthProvider = ({ children }) => {
           }
 
           setUser({ id: decoded.id });
+
+          // If we're on the login page, redirect based on user type
+          if (window.location.pathname === "/login") {
+            try {
+              const userProfile = await getProfile();
+              if (userProfile.data.userType === "admin") {
+                navigate("/admin");
+              } else {
+                navigate("/");
+              }
+            } catch (profileError) {
+              console.error("Error fetching user profile:", profileError);
+            }
+          }
         } catch (error) {
           console.error("Failed to decode token:", error);
           logout(false); // Don't redirect on token error
@@ -36,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     initAuth();
-  }, []);
+  }, [navigate]); // Add navigate as a dependency
 
   const register = async (userData) => {
     try {
@@ -57,7 +72,19 @@ export const AuthProvider = ({ children }) => {
       if (result.token) {
         const decoded = jwtDecode(result.token);
         setUser({ id: decoded.id });
-        navigate("/");
+
+        // Get user profile to check userType
+        try {
+          const userProfile = await getProfile();
+          if (userProfile.data.userType === "admin") {
+            navigate("/admin"); // Redirect admin to admin dashboard
+          } else {
+            navigate("/"); // Redirect regular users to home page
+          }
+        } catch (profileError) {
+          console.error("Error fetching user profile:", profileError);
+          navigate("/"); // Default to home page if there's an error
+        }
       }
       return result;
     } finally {

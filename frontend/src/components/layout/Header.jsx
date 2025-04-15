@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Badge, Drawer, Button, Dropdown } from "antd";
 import {
@@ -7,15 +7,33 @@ import {
   MenuOutlined,
   DownOutlined,
   KeyOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { getProfile } from "../../services/userService";
 
 const Header = () => {
   const { isAuthenticated, logout } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (isAuthenticated) {
+        try {
+          const response = await getProfile();
+          setIsAdmin(response.data.userType === "admin");
+        } catch (error) {
+          console.error("Error checking admin status:", error);
+        }
+      }
+    };
+
+    checkAdminStatus();
+  }, [isAuthenticated]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -37,6 +55,15 @@ const Header = () => {
       label: <Link to="/profile?tab=password">Change Password</Link>,
       icon: <KeyOutlined />,
     },
+    ...(isAdmin
+      ? [
+          {
+            key: "adminDashboard",
+            label: <Link to="/admin">Admin Dashboard</Link>,
+            icon: <DashboardOutlined />,
+          },
+        ]
+      : []),
     {
       key: "divider",
       type: "divider",
@@ -67,6 +94,11 @@ const Header = () => {
           {isAuthenticated && (
             <Link to="/orders" className="text-gray-700 hover:text-blue-500">
               My Orders
+            </Link>
+          )}
+          {isAdmin && (
+            <Link to="/admin" className="text-gray-700 hover:text-blue-500">
+              <DashboardOutlined className="mr-1" /> Admin
             </Link>
           )}
           {isAuthenticated && (
@@ -141,6 +173,17 @@ const Header = () => {
               }}
             >
               My Orders
+            </Menu.Item>
+          )}
+          {isAdmin && (
+            <Menu.Item
+              key="admin"
+              onClick={() => {
+                navigate("/admin");
+                toggleMenu();
+              }}
+            >
+              <DashboardOutlined className="mr-1" /> Admin Dashboard
             </Menu.Item>
           )}
           {isAuthenticated && (

@@ -82,7 +82,6 @@ const CheckoutPage = () => {
         shippingAddress,
         paymentMethod,
       };
-      console.log("orderData: ", orderData);
 
       // Place the order
       const response = await orderService.placeOrder(orderData);

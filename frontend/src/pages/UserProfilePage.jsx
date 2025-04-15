@@ -39,7 +39,7 @@ const UserProfilePage = () => {
       try {
         setLoading(true);
         const response = await getProfile();
-        console.log("Profile response:", response); // Debug log
+
         if (response && response.success && response.data) {
           setProfile(response.data);
         } else {
@@ -204,9 +204,6 @@ const UserProfilePage = () => {
       children: <ChangePasswordForm />,
     },
   ];
-
-  console.log("Current profile state:", profile); // Debug log
-  console.log("Active tab:", activeTab); // Debug log
 
   if (loading) {
     return (

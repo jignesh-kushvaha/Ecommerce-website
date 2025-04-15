@@ -28,7 +28,6 @@ const OrderList = () => {
         }
 
         const response = await orderService.getOrders(params);
-        console.log(response.data);
 
         setOrders(response.data);
       } catch (err) {

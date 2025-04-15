@@ -23,4 +23,11 @@ router.patch("/:id", productControllers.updateProduct);
 
 router.post("/:id/reviews", productControllers.addReview);
 
+// Add delete route for admins
+router.delete(
+  "/:id",
+  authMiddleware.restrictTo("admin"),
+  productControllers.deleteProduct
+);
+
 export default router;

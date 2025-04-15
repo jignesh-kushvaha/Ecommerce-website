@@ -142,3 +142,16 @@ export const addReview = catchAsync(async (req, res) => {
     data: review,
   });
 });
+
+export const deleteProduct = catchAsync(async (req, res, next) => {
+  const product = await Product.findByIdAndDelete(req.params.id);
+
+  if (!product) {
+    return next(new AppError("Product not found", statusCode.NOT_FOUND));
+  }
+
+  res.status(statusCode.OK).json({
+    success: true,
+    message: "Product deleted successfully",
+  });
+});

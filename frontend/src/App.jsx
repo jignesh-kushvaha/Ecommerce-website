@@ -14,6 +14,12 @@ import OrdersPage from "./pages/OrdersPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import AdminProfilePage from "./pages/admin/AdminProfilePage";
+import AdminAddProductPage from "./pages/admin/AdminAddProductPage";
+import AdminEditProductPage from "./pages/admin/AdminEditProductPage";
+import AdminRoute from "./components/routing/AdminRoute";
 
 const App = () => {
   return (
@@ -40,6 +46,21 @@ const App = () => {
                   <Route path="login" element={<LoginPage />} />
                   <Route path="register" element={<RegisterPage />} />
                   <Route path="profile" element={<UserProfilePage />} />
+
+                  {/* Admin Routes */}
+                  <Route path="admin" element={<AdminRoute />}>
+                    <Route index element={<AdminDashboardPage />} />
+                    <Route path="products" element={<AdminProductsPage />} />
+                    <Route
+                      path="products/add"
+                      element={<AdminAddProductPage />}
+                    />
+                    <Route
+                      path="products/edit/:id"
+                      element={<AdminEditProductPage />}
+                    />
+                    <Route path="profile" element={<AdminProfilePage />} />
+                  </Route>
                 </Route>
               </Routes>
             </MessageProvider>
