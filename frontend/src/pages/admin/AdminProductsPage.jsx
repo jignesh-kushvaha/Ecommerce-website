@@ -121,7 +121,7 @@ const AdminProductsPage = () => {
         <img
           src={
             images && images.length > 0
-              ? `${API_ENDPOINTS.base}/public/uploads/${images[0]}`
+              ? `${API_ENDPOINTS.base}/uploads/${images[0]}`
               : ""
           }
           alt="Product"

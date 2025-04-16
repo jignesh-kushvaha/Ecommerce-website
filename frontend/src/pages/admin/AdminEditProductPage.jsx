@@ -58,7 +58,7 @@ const AdminEditProductPage = () => {
               uid: `-${index}`,
               name: `Image ${index + 1}`,
               status: "done",
-              url: `${API_ENDPOINTS.base}/public/uploads/${image}`,
+              url: `${API_ENDPOINTS.base}/uploads/${image}`,
               filename: image,
             }))
           );

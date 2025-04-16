@@ -165,7 +165,7 @@ const ProductDetailPage = () => {
               {product.images.map((image, index) => (
                 <div key={index} className="h-96">
                   <img
-                    src={`${API_ENDPOINTS.base}/public/uploads/${image}`}
+                    src={`${API_ENDPOINTS.base}/uploads/${image}`}
                     alt={`${product.name} - Image ${index + 1}`}
                     className="w-full h-full object-contain"
                   />
