@@ -19,7 +19,7 @@ import {
 import { Link } from "react-router-dom";
 import { getProducts } from "../../services/productService";
 import api from "../../services/api";
-
+import API_ENDPOINTS from "../../config/apiConfig";
 const { Title } = Typography;
 
 const AdminProductsPage = () => {
@@ -120,7 +120,9 @@ const AdminProductsPage = () => {
       render: (images) => (
         <img
           src={
-            images && images.length > 0 ? `/backend/public/${images[0]}` : ""
+            images && images.length > 0
+              ? `${API_ENDPOINTS.base}/public/uploads/${images[0]}`
+              : ""
           }
           alt="Product"
           style={{ width: 50, height: 50, objectFit: "cover" }}

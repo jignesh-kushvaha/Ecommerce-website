@@ -19,6 +19,8 @@ import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminProfilePage from "./pages/admin/AdminProfilePage";
 import AdminAddProductPage from "./pages/admin/AdminAddProductPage";
 import AdminEditProductPage from "./pages/admin/AdminEditProductPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminRoute from "./components/routing/AdminRoute";
 
 const App = () => {
@@ -60,6 +62,8 @@ const App = () => {
                       element={<AdminEditProductPage />}
                     />
                     <Route path="profile" element={<AdminProfilePage />} />
+                    <Route path="users" element={<AdminUsersPage />} />
+                    <Route path="orders" element={<AdminOrdersPage />} />
                   </Route>
                 </Route>
               </Routes>

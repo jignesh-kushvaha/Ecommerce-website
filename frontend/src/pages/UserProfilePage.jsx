@@ -224,11 +224,14 @@ const UserProfilePage = () => {
           <Card className="mb-6 text-center">
             <div className="mb-4">
               {profile?.profileImage ? (
-                <img
-                  src={`${API_ENDPOINTS.base}${profile.profileImage}`}
-                  alt="Profile"
-                  className="rounded-full w-48 h-48 mx-auto object-cover"
-                />
+                <>
+                  {console.log(`${API_ENDPOINTS.base}${profile.profileImage}`)}
+                  <img
+                    src={`${API_ENDPOINTS.base}${profile.profileImage}`}
+                    alt="Profile"
+                    className="rounded-full w-48 h-48 mx-auto object-cover"
+                  />
+                </>
               ) : (
                 <div className="bg-gray-200 rounded-full w-48 h-48 mx-auto flex items-center justify-center">
                   <span className="text-4xl text-gray-500">

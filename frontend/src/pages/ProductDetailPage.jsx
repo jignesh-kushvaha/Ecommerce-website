@@ -24,6 +24,7 @@ import {
 import * as productService from "../services/productService";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import API_ENDPOINTS from "../config/apiConfig";
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -164,7 +165,7 @@ const ProductDetailPage = () => {
               {product.images.map((image, index) => (
                 <div key={index} className="h-96">
                   <img
-                    src={image}
+                    src={`${API_ENDPOINTS.base}/public/uploads/${image}`}
                     alt={`${product.name} - Image ${index + 1}`}
                     className="w-full h-full object-contain"
                   />

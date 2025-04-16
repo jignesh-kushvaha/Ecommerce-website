@@ -10,10 +10,12 @@ import {
   message,
   Select,
   Spin,
+  Divider,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import { getProduct, updateProduct } from "../../services/productService";
 import { useNavigate, useParams } from "react-router-dom";
+import API_ENDPOINTS from "../../config/apiConfig";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -41,6 +43,7 @@ const AdminEditProductPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [existingImages, setExistingImages] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -48,7 +51,6 @@ const AdminEditProductPage = () => {
         setLoading(true);
         const response = await getProduct(id);
         const product = response.data;
-
         // Set existing images
         if (product.images && product.images.length > 0) {
           setExistingImages(
@@ -56,7 +58,7 @@ const AdminEditProductPage = () => {
               uid: `-${index}`,
               name: `Image ${index + 1}`,
               status: "done",
-              url: `/backend/public/${image}`,
+              url: `${API_ENDPOINTS.base}/public/uploads/${image}`,
               filename: image,
             }))
           );
@@ -85,12 +87,13 @@ const AdminEditProductPage = () => {
     try {
       setSubmitting(true);
 
-      // Update product data
+      // Update product data with both existing and new images
       const productData = {
         ...values,
-        // We'll only send the existing image filenames here
-        // For file uploads, we'd need to use FormData and modify the updateProduct function
+        // Existing images that weren't deleted
         images: existingImages.map((img) => img.filename),
+        // New images to upload
+        newImages: fileList.map((file) => file.originFileObj),
       };
 
       await updateProduct(id, productData);
@@ -102,6 +105,16 @@ const AdminEditProductPage = () => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleImageChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const handleRemoveExistingImage = (imageToRemove) => {
+    setExistingImages(
+      existingImages.filter((img) => img.uid !== imageToRemove.uid)
+    );
   };
 
   if (loading) {
@@ -199,27 +212,49 @@ const AdminEditProductPage = () => {
           </Form.Item>
 
           <Form.Item
-            label="Product Images"
+            label="Current Images"
             tooltip="These are the existing product images"
           >
-            <div className="mb-2">
-              <strong>Current Images:</strong>
-            </div>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {existingImages.map((image, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={image.url}
-                    alt={`Product ${index}`}
-                    className="w-24 h-24 object-cover rounded border"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="text-gray-500 text-sm mt-2">
-              Note: To change images, please delete this product and create a
-              new one.
-            </div>
+            {existingImages.length > 0 ? (
+              <div className="flex flex-wrap gap-4 mb-4">
+                {existingImages.map((image) => (
+                  <div key={image.uid} className="relative">
+                    <div className="w-24 h-24 relative group">
+                      <img
+                        src={image.url}
+                        alt={image.name}
+                        className="w-full h-full object-cover rounded border"
+                      />
+                      <div
+                        className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full cursor-pointer"
+                        onClick={() => handleRemoveExistingImage(image)}
+                      >
+                        <DeleteOutlined />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-gray-500">No current images</div>
+            )}
+          </Form.Item>
+
+          <Divider />
+
+          <Form.Item
+            label="Upload New Images"
+            tooltip="You can add new images to the product"
+          >
+            <Upload
+              listType="picture"
+              fileList={fileList}
+              onChange={handleImageChange}
+              beforeUpload={() => false}
+              multiple
+            >
+              <Button icon={<UploadOutlined />}>Upload New Images</Button>
+            </Upload>
           </Form.Item>
 
           <Form.Item>

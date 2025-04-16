@@ -19,7 +19,12 @@ router.post(
   productControllers.createProduct
 );
 
-router.patch("/:id", productControllers.updateProduct);
+router.patch(
+  "/:id",
+  authMiddleware.restrictTo("admin"),
+  upload.array("images"),
+  productControllers.updateProduct
+);
 
 router.post("/:id/reviews", productControllers.addReview);
 

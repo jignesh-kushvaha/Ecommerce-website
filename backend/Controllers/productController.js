@@ -78,7 +78,10 @@ export const getProduct = catchAsync(async (req, res, next) => {
     });
   } catch (error) {
     return next(
-      new AppError("Error fetching products", statusCode.INTERNAL_SERVER_ERROR)
+      new AppError(
+        `Error fetching products: ${error.message}`,
+        statusCode.INTERNAL_SERVER_ERROR
+      )
     );
   }
 });
@@ -108,7 +111,30 @@ export const createProduct = catchAsync(async (req, res, next) => {
 });
 
 export const updateProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+  const updateData = { ...req.body };
+
+  // Handle image uploads if files are present
+  if (req.files && req.files.length > 0) {
+    const newImages = req.files.map((file) => file.filename);
+
+    // If there are existing images, combine them with the new ones
+    if (req.body.existingImages) {
+      // If existingImages is a string (single image), convert to array
+      const existingImages = Array.isArray(req.body.existingImages)
+        ? req.body.existingImages
+        : [req.body.existingImages];
+
+      updateData.images = [...existingImages, ...newImages];
+    } else {
+      // If no existing images, just use the new ones
+      updateData.images = newImages;
+    }
+
+    // Remove existingImages field as it's not in the schema
+    delete updateData.existingImages;
+  }
+
+  const product = await Product.findByIdAndUpdate(req.params.id, updateData, {
     new: true,
   });
 

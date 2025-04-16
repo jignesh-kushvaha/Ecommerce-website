@@ -4,6 +4,7 @@ import productRoutes from "./Routers/productRoutes.js";
 import orderRoutes from "./Routers/orderRoutes.js";
 import authRoutes from "./Routers/authRoutes.js";
 import userRoutes from "./Routers/userRoutes.js";
+import adminRoutes from "./Routers/adminRoutes.js";
 import dotenv from "dotenv";
 import globalErrorHandler from "./Middlewares/errorMiddleware.js";
 import AppError from "./Utils/appError.js";
@@ -39,6 +40,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

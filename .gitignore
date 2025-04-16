@@ -46,8 +46,8 @@ yarn-error.log*
 .env.production.local
 
 # Uploaded files
-/backend/public/uploads/*
-!/backend/public/uploads/.gitkeep
+{API_ENDPOINTS}/uploads/*
+{API_ENDPOINTS}/uploads/.gitkeep
 
 # Logs
 logs

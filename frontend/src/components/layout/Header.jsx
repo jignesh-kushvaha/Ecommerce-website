@@ -19,16 +19,25 @@ const Header = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [name, setName] = useState(null);
+  const [userType, setUserType] = useState(null);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (isAuthenticated) {
         try {
           const response = await getProfile();
+          setName(response.data.name);
           setIsAdmin(response.data.userType === "admin");
+          setUserType(response.data.userType);
         } catch (error) {
           console.error("Error checking admin status:", error);
         }
+      } else {
+        // Reset all user data when not authenticated
+        setIsAdmin(false);
+        setName(null);
+        setUserType(null);
       }
     };
 
@@ -40,8 +49,20 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    // Reset state before logging out
+    setIsAdmin(false);
+    setName(null);
+    setUserType(null);
+
     logout();
     navigate("/login");
+  };
+
+  const handleProductStoreClick = (e) => {
+    if (isAdmin) {
+      e.preventDefault();
+      navigate("/admin");
+    }
   };
 
   const profileMenuItems = [
@@ -79,62 +100,74 @@ const Header = () => {
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-blue-600">
+        <Link
+          to={isAdmin ? "/admin" : "/"}
+          className="text-2xl font-bold text-blue-600"
+          onClick={handleProductStoreClick}
+        >
           ProductStore
         </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-gray-700 hover:text-blue-500">
-            Home
-          </Link>
-          <Link to="/products" className="text-gray-700 hover:text-blue-500">
-            Products
-          </Link>
-          {isAuthenticated && (
-            <Link to="/orders" className="text-gray-700 hover:text-blue-500">
-              My Orders
-            </Link>
-          )}
-          {isAdmin && (
-            <Link to="/admin" className="text-gray-700 hover:text-blue-500">
-              <DashboardOutlined className="mr-1" /> Admin
-            </Link>
-          )}
-          {isAuthenticated && (
-            <Link to="/cart" className="text-gray-700 hover:text-blue-500">
-              <Badge count={itemCount} showZero>
-                <ShoppingCartOutlined className="text-2xl" />
-              </Badge>
-            </Link>
-          )}
-          {isAuthenticated ? (
-            <Dropdown
-              menu={{ items: profileMenuItems }}
-              placement="bottomRight"
-            >
-              <Button type="text" className="flex items-center">
-                <UserOutlined className="text-lg mr-1" />
-                My Account
-                <DownOutlined className="ml-1 text-xs" />
-              </Button>
-            </Dropdown>
-          ) : (
-            <Link to="/login" className="text-gray-700 hover:text-blue-500">
-              <UserOutlined className="mr-1" /> Login
-            </Link>
-          )}
-        </div>
+        {isAuthenticated && isAdmin && <div className="flex-grow"></div>}
 
-        {/* Mobile menu button */}
-        <div className="md:hidden">
-          <button
-            className="text-gray-700 hover:text-blue-500"
-            onClick={toggleMenu}
-          >
-            <MenuOutlined className="text-2xl" />
-          </button>
-        </div>
+        {/* For admin, only show "Hello, name" on the right */}
+        {isAuthenticated && isAdmin && (
+          <div className="flex items-center">
+            <p className="text-gray-700">Hello, {name}</p>
+          </div>
+        )}
+
+        {/* Desktop Navigation for non-admin users */}
+        {!isAdmin && (
+          <div className="hidden md:flex items-center space-x-8">
+            <Link to="/" className="text-gray-700 hover:text-blue-500">
+              Home
+            </Link>
+            <Link to="/products" className="text-gray-700 hover:text-blue-500">
+              Products
+            </Link>
+            {isAuthenticated && userType === "customer" && (
+              <Link to="/orders" className="text-gray-700 hover:text-blue-500">
+                My Orders
+              </Link>
+            )}
+            {isAuthenticated && userType === "customer" && (
+              <Link to="/cart" className="text-gray-700 hover:text-blue-500">
+                <Badge count={itemCount} showZero>
+                  <ShoppingCartOutlined className="text-2xl" />
+                </Badge>
+              </Link>
+            )}
+            {isAuthenticated && userType === "customer" ? (
+              <Dropdown
+                menu={{ items: profileMenuItems }}
+                placement="bottomRight"
+              >
+                <Button type="text" className="flex items-center">
+                  <UserOutlined className="text-lg mr-1" />
+                  My Account
+                  <DownOutlined className="ml-1 text-xs" />
+                </Button>
+              </Dropdown>
+            ) : !isAuthenticated ? (
+              <Link to="/login" className="text-gray-700 hover:text-blue-500">
+                <UserOutlined className="mr-1" /> Login
+              </Link>
+            ) : null}
+          </div>
+        )}
+
+        {/* Mobile menu button - don't show for admin */}
+        {!isAdmin && (
+          <div className="md:hidden">
+            <button
+              className="text-gray-700 hover:text-blue-500"
+              onClick={toggleMenu}
+            >
+              <MenuOutlined className="text-2xl" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mobile Navigation Drawer */}
@@ -164,7 +197,7 @@ const Header = () => {
           >
             Products
           </Menu.Item>
-          {isAuthenticated && (
+          {isAuthenticated && userType === "customer" && (
             <Menu.Item
               key="orders"
               onClick={() => {
@@ -186,7 +219,7 @@ const Header = () => {
               <DashboardOutlined className="mr-1" /> Admin Dashboard
             </Menu.Item>
           )}
-          {isAuthenticated && (
+          {isAuthenticated && userType === "customer" && (
             <Menu.Item
               key="cart"
               onClick={() => {
@@ -199,7 +232,7 @@ const Header = () => {
               </Badge>
             </Menu.Item>
           )}
-          {isAuthenticated ? (
+          {isAuthenticated && userType === "customer" ? (
             <>
               <Menu.Item
                 key="profile"
@@ -223,7 +256,7 @@ const Header = () => {
                 Logout
               </Menu.Item>
             </>
-          ) : (
+          ) : !isAuthenticated ? (
             <Menu.Item
               key="login"
               onClick={() => {
@@ -233,7 +266,7 @@ const Header = () => {
             >
               Login
             </Menu.Item>
-          )}
+          ) : null}
         </Menu>
       </Drawer>
     </header>

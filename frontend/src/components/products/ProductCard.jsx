@@ -5,6 +5,7 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { useMessage } from "../../context/MessageContext";
 
+import API_ENDPOINTS from "../../config/apiConfig";
 const { Meta } = Card;
 
 const ProductCard = ({ product }) => {
@@ -30,11 +31,12 @@ const ProductCard = ({ product }) => {
       3
     );
   };
+  console.log(product.images);
 
   // Fallback image in case product images are missing
   const imageUrl =
     product.images && product.images.length
-      ? product.images[0]
+      ? `${API_ENDPOINTS.base}/uploads/${product.images[0]}`
       : "https://via.placeholder.com/300x300";
 
   return (

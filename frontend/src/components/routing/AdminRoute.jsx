@@ -9,6 +9,11 @@ import {
   UserOutlined,
   PlusOutlined,
   LogoutOutlined,
+  EditOutlined,
+  EyeOutlined,
+  KeyOutlined,
+  TeamOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 
@@ -56,7 +61,12 @@ const AdminRoute = () => {
     if (path === "/admin") return ["dashboard"];
     if (path === "/admin/products") return ["products"];
     if (path === "/admin/products/add") return ["add-product"];
-    if (path === "/admin/profile") return ["profile"];
+    if (path === "/admin/users") return ["users"];
+    if (path === "/admin/orders") return ["orders"];
+    if (path === "/admin/profile") return ["view-profile"];
+    if (path.includes("/admin/profile?tab=edit")) return ["update-profile"];
+    if (path.includes("/admin/profile?tab=password"))
+      return ["change-password"];
     return ["dashboard"];
   };
 
@@ -71,15 +81,41 @@ const AdminRoute = () => {
           <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
             <Link to="/admin">Dashboard</Link>
           </Menu.Item>
-          <Menu.Item key="products" icon={<ShoppingOutlined />}>
-            <Link to="/admin/products">Products</Link>
-          </Menu.Item>
-          <Menu.Item key="add-product" icon={<PlusOutlined />}>
-            <Link to="/admin/products/add">Add Product</Link>
-          </Menu.Item>
-          <Menu.Item key="profile" icon={<UserOutlined />}>
-            <Link to="/admin/profile">Profile</Link>
-          </Menu.Item>
+
+          <Menu.Divider />
+          <Menu.ItemGroup title="Products">
+            <Menu.Item key="products" icon={<ShoppingOutlined />}>
+              <Link to="/admin/products">All Products</Link>
+            </Menu.Item>
+            <Menu.Item key="add-product" icon={<PlusOutlined />}>
+              <Link to="/admin/products/add">Add Product</Link>
+            </Menu.Item>
+          </Menu.ItemGroup>
+
+          <Menu.Divider />
+          <Menu.ItemGroup title="Management">
+            <Menu.Item key="users" icon={<TeamOutlined />}>
+              <Link to="/admin/users">Users</Link>
+            </Menu.Item>
+            <Menu.Item key="orders" icon={<ShoppingCartOutlined />}>
+              <Link to="/admin/orders">Orders</Link>
+            </Menu.Item>
+          </Menu.ItemGroup>
+
+          <Menu.Divider />
+          <Menu.ItemGroup title="Profile Management">
+            <Menu.Item key="view-profile" icon={<EyeOutlined />}>
+              <Link to="/admin/profile">View Profile</Link>
+            </Menu.Item>
+            <Menu.Item key="update-profile" icon={<EditOutlined />}>
+              <Link to="/admin/profile?tab=edit">Update Profile</Link>
+            </Menu.Item>
+            <Menu.Item key="change-password" icon={<KeyOutlined />}>
+              <Link to="/admin/profile?tab=password">Change Password</Link>
+            </Menu.Item>
+          </Menu.ItemGroup>
+
+          <Menu.Divider />
           <Menu.Item
             key="logout"
             icon={<LogoutOutlined />}
