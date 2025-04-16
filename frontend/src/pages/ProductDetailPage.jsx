@@ -48,6 +48,8 @@ const ProductDetailPage = () => {
       try {
         setLoading(true);
         const response = await productService.getProduct(id);
+        console.log("response", response);
+
         setProduct(response.data);
       } catch (err) {
         setError("Failed to load product details");
@@ -244,6 +246,7 @@ const ProductDetailPage = () => {
 
           <TabPane tab="Reviews" key="2">
             <div className="p-6 bg-white rounded-md shadow-sm">
+              {console.log(product)}
               {product.reviews && product.reviews.length > 0 ? (
                 <div>
                   {product.reviews.map((review) => (
