@@ -5,7 +5,12 @@ import { updateProfile } from "../../services/userService";
 
 const { Title } = Typography;
 
-const UpdateProfileForm = ({ profile, onSuccess, onCancel }) => {
+const UpdateProfileForm = ({
+  profile,
+  onSuccess,
+  onCancel,
+  isAdmin = false,
+}) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
@@ -14,8 +19,25 @@ const UpdateProfileForm = ({ profile, onSuccess, onCancel }) => {
     try {
       setLoading(true);
 
-      // Create form data for submission
-      const formData = { ...values };
+      // Create properly formatted data for backend
+      const formData = {
+        name: values.name,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        userType: values.userType,
+        // Format address as a nested object
+        address: {
+          street: values["address.street"] || "",
+          city: values["address.city"] || "",
+          state: values["address.state"] || "",
+          country: values["address.country"] || "",
+          postalCode: values["address.postalCode"] || "",
+        },
+      };
+
+      // Debug logging to verify correct data formatting
+      console.log("Sending formatted data:", formData);
+      console.log("Address JSON:", JSON.stringify(formData.address));
 
       // Add profile image if selected
       if (fileList.length > 0 && fileList[0].originFileObj) {
@@ -85,7 +107,7 @@ const UpdateProfileForm = ({ profile, onSuccess, onCancel }) => {
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <Title level={4} className="text-blue-600 font-medium">
-          Edit Profile
+          {isAdmin ? "Edit Admin Profile" : "Edit Profile"}
         </Title>
       </div>
 

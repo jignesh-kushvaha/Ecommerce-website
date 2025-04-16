@@ -16,13 +16,14 @@ export const updateProfile = async (userData) => {
 
     // Add basic user data
     formData.append("name", userData.name || "");
-    formData.append("email", userData.email || "");
     formData.append("phoneNumber", userData.phoneNumber || "");
-    formData.append("userType", userData.userType);
+    formData.append("userType", userData.userType || "customer");
 
-    // Add address as a JSON string
+    // Add address as a JSON string - this is crucial for the backend to parse correctly
     if (userData.address) {
-      formData.append("address", JSON.stringify(userData.address));
+      const addressStr = JSON.stringify(userData.address);
+      formData.append("address", addressStr);
+      console.log("Address being sent:", addressStr);
     }
 
     // Add profile image if it exists
@@ -30,10 +31,10 @@ export const updateProfile = async (userData) => {
       formData.append("profileImage", userData.profileImage);
     }
 
-    // Log the actual data being sent
-    const formDataObj = {};
+    // For debugging - log the form data entries
+    console.log("Form data entries:");
     for (let [key, value] of formData.entries()) {
-      formDataObj[key] = value;
+      console.log(`${key}: ${value}`);
     }
 
     const response = await api.patch("/user/update-profile", formData, {

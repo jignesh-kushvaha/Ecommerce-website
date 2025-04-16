@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { changePassword } from "../../services/userService";
+import { useNavigate } from "react-router-dom";
 
-const ChangePasswordForm = () => {
+const ChangePasswordForm = ({ navigateAfterSuccess }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onFinish = async (values) => {
     try {
@@ -21,6 +23,11 @@ const ChangePasswordForm = () => {
           className: "custom-message",
         });
         form.resetFields();
+
+        // Navigate to specified path if provided
+        if (navigateAfterSuccess) {
+          navigate(navigateAfterSuccess);
+        }
       }
     } catch (error) {
       console.error(error);

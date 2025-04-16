@@ -4,10 +4,19 @@ import { catchAsync } from "../Utils/catchAsync.js";
 import * as statusCode from "../Constants/httpStatusCode.js";
 
 export const updateProfile = catchAsync(async (req, res) => {
-  const updateData = req.body;
+  const updateData = { ...req.body };
 
-  if (updateData.address) {
-    updateData.address = { ...req.user.address, ...updateData.address };
+  // Parse address if it's a string (from multipart form data)
+  if (updateData.address && typeof updateData.address === "string") {
+    try {
+      updateData.address = JSON.parse(updateData.address);
+    } catch (error) {
+      console.error("Error parsing address JSON:", error);
+      return res.status(statusCode.BAD_REQUEST).json({
+        success: false,
+        message: "Invalid address format",
+      });
+    }
   }
 
   // Handle file upload
