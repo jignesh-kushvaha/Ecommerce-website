@@ -113,7 +113,7 @@ const AdminAddProductPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Form.Item
               name="price"
-              label="Price ($)"
+              label="Price (₹)"
               rules={[
                 { required: true, message: "Please enter the product price" },
                 {
@@ -126,7 +126,7 @@ const AdminAddProductPage = () => {
               <InputNumber
                 style={{ width: "100%" }}
                 formatter={(value) =>
-                  `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
                 parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
               />

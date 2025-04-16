@@ -41,14 +41,13 @@ const ProductCard = ({ product }) => {
 
   return (
     <Card
-      hoverable
       className="h-full flex flex-col transition-all duration-300 hover:shadow-lg"
       cover={
         <div className="h-48 overflow-hidden bg-gray-100">
           <img
             alt={product.name}
             src={imageUrl}
-            className="object-cover w-full h-full"
+            className="object-contain w-full h-full"
           />
         </div>
       }

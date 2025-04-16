@@ -390,7 +390,7 @@ const AdminDashboardPage = () => {
                             ))}{" "}
                           {product.avgRating?.toFixed(1) || "No ratings"}
                         </Text>
-                        <div>Price: ${product.price?.toFixed(2)}</div>
+                        <div>Price: ₹{product.price?.toFixed(2)}</div>
                       </div>
                     }
                   />
@@ -436,7 +436,7 @@ const AdminDashboardPage = () => {
                     )
                   }
                   title={product.name}
-                  description={`Price: $${product.price?.toFixed(2)}`}
+                  description={`Price: ₹${product.price?.toFixed(2)}`}
                 />
               </List.Item>
             )}

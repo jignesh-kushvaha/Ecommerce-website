@@ -55,7 +55,7 @@ const Header = () => {
     setUserType(null);
 
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const handleProductStoreClick = (e) => {

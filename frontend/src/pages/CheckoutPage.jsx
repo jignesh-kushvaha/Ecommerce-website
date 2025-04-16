@@ -181,11 +181,11 @@ const CheckoutPage = () => {
           rules={[{ required: true, message: "Please select your country" }]}
         >
           <Select placeholder="Select your country">
+            <Option value="India">India</Option>
             <Option value="USA">United States</Option>
             <Option value="Canada">Canada</Option>
             <Option value="UK">United Kingdom</Option>
             <Option value="Australia">Australia</Option>
-            <Option value="India">India</Option>
           </Select>
         </Form.Item>
 

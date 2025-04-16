@@ -85,7 +85,7 @@ const RegisterForm = () => {
           />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           name="userType"
           rules={[{ required: true, message: "Please select user type" }]}
           initialValue="customer"
@@ -98,7 +98,7 @@ const RegisterForm = () => {
             <Option value="customer">Customer</Option>
             <Option value="admin">Admin</Option>
           </Select>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item>
           <Button

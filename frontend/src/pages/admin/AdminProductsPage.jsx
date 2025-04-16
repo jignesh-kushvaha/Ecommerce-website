@@ -146,7 +146,7 @@ const AdminProductsPage = () => {
       dataIndex: "price",
       key: "price",
       sorter: (a, b) => a.price - b.price,
-      render: (price) => `$${price.toFixed(2)}`,
+      render: (price) => `₹${price.toFixed(2)}`,
     },
     {
       title: "Stock",
