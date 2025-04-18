@@ -58,15 +58,19 @@ const AdminRoute = () => {
 
   const getSelectedKey = () => {
     const path = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    const tab = searchParams.get("tab");
     if (path === "/admin") return ["dashboard"];
     if (path === "/admin/products") return ["products"];
     if (path === "/admin/products/add") return ["add-product"];
     if (path === "/admin/users") return ["users"];
     if (path === "/admin/orders") return ["orders"];
-    if (path === "/admin/profile") return ["view-profile"];
-    if (path.includes("/admin/profile?tab=edit")) return ["update-profile"];
-    if (path.includes("/admin/profile?tab=password"))
-      return ["change-password"];
+    if (path === "/admin/profile") {
+      if (tab === "edit") return ["update-profile"];
+      else if (tab === "password") return ["change-password"];
+      else return ["view-profile"];
+    }
+
     return ["dashboard"];
   };
 

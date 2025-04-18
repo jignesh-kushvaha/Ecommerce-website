@@ -13,7 +13,6 @@ const { Title } = Typography;
 const ProfileComponent = ({ isAdmin = false }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -21,10 +20,8 @@ const ProfileComponent = ({ isAdmin = false }) => {
   // Get the tab parameter from the URL
   const searchParams = new URLSearchParams(location.search);
   const tabFromUrl = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState(
-    tabFromUrl === "password" ? "password" : "profile"
-  );
-
+  const [activeTab, setActiveTab] = useState("profile");
+  const [editMode, setEditMode] = useState(tabFromUrl === "edit");
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -62,14 +59,20 @@ const ProfileComponent = ({ isAdmin = false }) => {
   useEffect(() => {
     if (tabFromUrl === "password") {
       setActiveTab("password");
+      setEditMode(false);
+    } else if (tabFromUrl === "edit") {
+      setActiveTab("profile");
+      setEditMode(true);
     } else {
       setActiveTab("profile");
+      setEditMode(false);
     }
   }, [tabFromUrl]);
 
   const handleProfileUpdate = (updatedProfile) => {
     setProfile(updatedProfile);
-    setEditMode(false);
+    const basePath = isAdmin ? "/admin/profile" : "/profile";
+    navigate(basePath); // Go back to profile tab
     message.success({
       content: "Profile updated successfully",
       duration: 2,
@@ -78,7 +81,12 @@ const ProfileComponent = ({ isAdmin = false }) => {
   };
 
   const toggleEditMode = () => {
-    setEditMode(!editMode);
+    const basePath = isAdmin ? "/admin/profile" : "/profile";
+    if (editMode) {
+      navigate(basePath);
+    } else {
+      navigate(`${basePath}?tab=edit`);
+    }
   };
 
   const handleTabChange = (key) => {
