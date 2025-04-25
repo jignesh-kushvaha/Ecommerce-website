@@ -224,8 +224,8 @@ const CheckoutPage = () => {
         >
           <Select placeholder="Select payment method">
             <Option value="creditCard">Credit Card</Option>
-            <Option value="paypal">PayPal</Option>
-            <Option value="bankTransfer">Bank Transfer</Option>
+            {/* <Option value="paypal">PayPal</Option>
+            <Option value="bankTransfer">Bank Transfer</Option> */}
           </Select>
         </Form.Item>
 

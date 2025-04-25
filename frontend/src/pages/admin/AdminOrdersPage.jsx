@@ -190,7 +190,7 @@ const AdminOrdersPage = () => {
       title: "Amount",
       dataIndex: "totalPrice",
       key: "amount",
-      render: (amount) => `$${amount?.toFixed(2)}`,
+      render: (amount) => `₹${amount?.toFixed(2)}`,
       sorter: (a, b) => a.totalPrice - b.totalPrice,
     },
     {
@@ -312,7 +312,7 @@ const AdminOrdersPage = () => {
                       title: "Price",
                       dataIndex: "price",
                       key: "price",
-                      render: (price) => `$${price?.toFixed(2)}`,
+                      render: (price) => `₹${price?.toFixed(2)}`,
                     },
                     {
                       title: "Quantity",
@@ -324,7 +324,7 @@ const AdminOrdersPage = () => {
                       dataIndex: "subtotal",
                       key: "subtotal",
                       render: (subtotal, item) =>
-                        `$${(item.price * item.quantity).toFixed(2)}`,
+                        `₹${(item.price * item.quantity).toFixed(2)}`,
                     },
                   ]}
                   dataSource={record.products}

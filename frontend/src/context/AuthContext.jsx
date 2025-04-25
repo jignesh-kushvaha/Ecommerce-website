@@ -27,31 +27,46 @@ export const AuthProvider = ({ children }) => {
             return;
           }
 
+          // First set the basic user info
           setUser({ id: decoded.id });
 
-          // If we're on the login page, redirect based on user type
-          if (window.location.pathname === "/login") {
-            try {
-              const userProfile = await getProfile();
-              if (userProfile.data.userType === "admin") {
-                navigate("/admin");
-              } else {
-                navigate("/");
-              }
-            } catch (profileError) {
-              console.error("Error fetching user profile:", profileError);
+          try {
+            const userProfile = await getProfile();
+            // Store userType in user state
+            setUser(prev => ({ ...prev, userType: userProfile.data.userType }));
+
+            // Check if we're on a non-admin page and user is admin, or vice versa
+            const isOnAdminPage = window.location.pathname.startsWith('/admin');
+            const isAdmin = userProfile.data.userType === "admin";
+
+            // If we're at root path and user is admin, redirect to admin
+            if (window.location.pathname === '/' && isAdmin) {
+              navigate('/admin');
+            } 
+            // If on other non-admin pages and user is admin
+            else if (isAdmin && !isOnAdminPage) {
+              navigate('/admin');
+            } 
+            // If non-admin user tries to access admin pages
+            else if (!isAdmin && isOnAdminPage) {
+              navigate('/');
             }
+          } catch (profileError) {
+            console.error("Error fetching user profile:", profileError);
+            // On error, clear user state and redirect to login
+            setUser(null);
+            navigate('/login');
           }
         } catch (error) {
           console.error("Failed to decode token:", error);
-          logout(false); // Don't redirect on token error
+          logout(false);
         }
       }
       setLoading(false);
     };
 
     initAuth();
-  }, [navigate]); // Add navigate as a dependency
+  }, [navigate]);
 
   const register = async (userData) => {
     try {
@@ -76,6 +91,7 @@ export const AuthProvider = ({ children }) => {
         // Get user profile to check userType
         try {
           const userProfile = await getProfile();
+          setUser(prev => ({ ...prev, userType: userProfile.data.userType }));
           if (userProfile.data.userType === "admin") {
             navigate("/admin"); // Redirect admin to admin dashboard
           } else {

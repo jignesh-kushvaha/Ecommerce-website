@@ -207,7 +207,7 @@ const AdminDashboardPage = () => {
       title: "Amount",
       dataIndex: "totalPrice",
       key: "amount",
-      render: (amount) => `$${amount?.toFixed(2)}`,
+      render: (amount) => `₹${amount?.toFixed(2)}`,
     },
     {
       title: "Status",
