@@ -4,6 +4,9 @@ A full-stack e-commerce website built with modern web technologies.
 
 ## Project Structure
 
+![ecomerce-diagram](https://github.com/user-attachments/assets/a2767443-03ef-40cd-bb97-0fb92cc67843)
+_Generated using [gitdiagram](https://gitdiagram.com/)_
+
 The project is divided into two main parts:
 
 ### Frontend
