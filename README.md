@@ -4,7 +4,7 @@ A full-stack e-commerce website built with modern web technologies.
 
 ## Project Structure
 
-![ecomerce-diagram](https://github.com/jignesh-kushvaha/Ecommerce-website/assets/ecom-diagram.png)
+![ecomerce-diagram](https://github.com/jignesh-kushvaha/Ecommerce-website/blob/main/assets/ecom-diagram.png)
 _Generated using [gitdiagram](https://gitdiagram.com/)_
 
 The project is divided into two main parts:
