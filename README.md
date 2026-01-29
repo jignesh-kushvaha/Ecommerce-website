@@ -4,17 +4,19 @@ A full-stack e-commerce website built with modern web technologies.
 
 ## Project Structure
 
-![ecomerce-diagram](https://github.com/user-attachments/assets/a2767443-03ef-40cd-bb97-0fb92cc67843)
+![ecomerce-diagram](https://github.com/jignesh-kushvaha/Ecommerce-website/assets/ecom-diagram.png)
 _Generated using [gitdiagram](https://gitdiagram.com/)_
 
 The project is divided into two main parts:
 
 ### Frontend
+
 - Built with React.js and Vite
 - Uses Tailwind CSS for styling
 - Modern and responsive UI design
 
 ### Backend
+
 - Node.js/Express.js server
 - MongoDB database
 - RESTful API architecture
@@ -34,12 +36,14 @@ The project is divided into two main parts:
 ## Tech Stack
 
 ### Frontend
+
 - React.js
 - Vite
 - Tailwind CSS
 - ESLint for code quality
 
 ### Backend
+
 - Node.js
 - Express.js
 - MongoDB
@@ -49,6 +53,7 @@ The project is divided into two main parts:
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - MongoDB
 - npm or yarn
@@ -56,41 +61,48 @@ The project is divided into two main parts:
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone [your-repository-url]
 ```
 
 2. Install Frontend Dependencies
+
 ```bash
 cd frontend
 npm install
 ```
 
 3. Install Backend Dependencies
+
 ```bash
 cd backend
 npm install
 ```
 
 4. Environment Setup
+
 - Create a `.env` file in the backend directory
 - Add necessary environment variables (see backend/README.md for details)
 
 ### Running the Application
 
 1. Start the Backend Server
+
 ```bash
 cd backend
 npm start
 ```
 
 2. Start the Frontend Development Server
+
 ```bash
 cd frontend
 npm run dev
 ```
 
 The application will be available at:
+
 - Frontend: http://localhost:5173
 - Backend: http://localhost:5000
 
