@@ -1,5 +1,5 @@
 import express from "express";
-import connectDb from "./Databases/db.js";
+import { initializeDatabase, defineAssociations } from "./config/init.js";
 import productRoutes from "./Routers/productRoutes.js";
 import orderRoutes from "./Routers/orderRoutes.js";
 import authRoutes from "./Routers/authRoutes.js";
@@ -8,9 +8,13 @@ import adminRoutes from "./Routers/adminRoutes.js";
 import dotenv from "dotenv";
 import globalErrorHandler from "./Middlewares/errorMiddleware.js";
 import AppError from "./Utils/appError.js";
+import rateLimitMiddleware from "./Middlewares/rateLimitMiddleware.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import loggerService from "./Utils/logger.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 
 dotenv.config({
   path: "./config.env",
@@ -20,30 +24,52 @@ dotenv.config({
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-connectDb();
+// Initialize PostgreSQL database
+await initializeDatabase();
+console.log("Database initialized");
+
 const app = express();
 
-// CORS configuration
+// CORS configuration - env-based
+const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: corsOrigin,
     credentials: true,
-  })
+  }),
 );
+loggerService.log(`CORS enabled for: ${corsOrigin}`);
 
 app.use(express.json());
 
+// Apply rate limiting to all API routes
+app.use("/api/", rateLimitMiddleware);
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, "public")));
+loggerService.log(
+  `Static files served from: ${path.join(__dirname, "public")}`,
+);
 
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/user", userRoutes);
-app.use("/api/admin", adminRoutes);
+// Swagger documentation (not rate-limited)
+app.use("/api-docs", swaggerUi.serve);
+app.get("/api-docs", swaggerUi.setup(swaggerSpec));
+loggerService.log("Swagger documentation available at /api-docs");
+
+// API Routes
+app.use("/auth", authRoutes);
+app.use("/products", productRoutes);
+app.use("/orders", orderRoutes);
+app.use("/user", userRoutes);
+app.use("/admin", adminRoutes);
+
+// Health check endpoint (exempt from rate limiting via middleware config)
+app.get("/health", (req, res) => {
+  res.status(200).json({ success: true, message: "Server is running" });
+});
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+  loggerService.log(`Server running on port ${process.env.PORT}`);
 });
 
 app.all("*", (req, res, next) => {
