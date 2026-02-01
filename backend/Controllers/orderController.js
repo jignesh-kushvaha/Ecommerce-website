@@ -1,195 +1,126 @@
 import {
-  BAD_REQUEST,
-  CREATED,
-  NOT_FOUND,
   OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
 } from "../Constants/httpStatusCode.js";
 import { ORDER_PLACED, ORDER_UPDATED } from "../Constants/responseMessage.js";
-import Order from "../Models/orderModel.js";
-import Product from "../Models/productModel.js";
 import { catchAsync } from "../Utils/catchAsync.js";
 import AppError from "../Utils/appError.js";
+import loggerService from "../Utils/logger.js";
+import OrderService from "../Services/OrderService.js";
+import CartService from "../Services/CartService.js";
+import { withTransaction } from "../Utils/transaction.js";
 
 export const getOrderDetails = catchAsync(async (req, res, next) => {
-  const order = await Order.findById(req.params.id)
-    .populate({
-      path: "products.productId",
-      select: "name price image category description",
-    })
-    .populate("userId", "name email");
+  try {
+    const order = await OrderService.getOrderById(req.params.id, req.user.id);
 
-  if (!order) {
-    return next(new AppError("Order not found", NOT_FOUND));
+    res.status(OK).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      return next(error);
+    }
+    loggerService.error(`Error getting order details ${req.params.id}`, error);
+    return next(new AppError("Failed to fetch order", INTERNAL_SERVER_ERROR));
   }
-
-  // Format the data for frontend display
-  const formattedOrder = {
-    ...order.toObject(),
-    products: order.products.map((item) => ({
-      product: item.productId,
-      quantity: item.quantity,
-      price: item.productId ? item.productId.price : 0,
-      subtotal: item.productId ? item.productId.price * item.quantity : 0,
-    })),
-  };
-
-  res.status(OK).json({
-    success: true,
-    data: formattedOrder,
-  });
 });
 
 export const placeOrder = catchAsync(async (req, res, next) => {
-  const { products, shippingAddress, paymentMethod, paymentDetails } = req.body;
-  const user = req.user;
+  try {
+    const { shipping_address, payment_method } = req.body;
+    const user_id = req.user.id;
 
-  if (!products || !shippingAddress || !paymentMethod) {
-    return next(
-      new AppError("Missing required order information", BAD_REQUEST)
-    );
-  }
-
-  let totalPrice = 0;
-  const orderProducts = [];
-
-  // Validate products and calculate total price
-  for (const item of products) {
-    const product = await Product.findById(item.productId);
-    if (!product) {
-      return next(
-        new AppError(`Product not found: ${item.productId}`, NOT_FOUND)
-      );
-    }
-    if (product.stock < item.quantity) {
-      return next(
-        new AppError(
-          `Insufficient stock for product ${product.name}. Available: ${product.stock}`,
-          BAD_REQUEST
-        )
-      );
+    // Validate required fields
+    if (!shipping_address || !payment_method) {
+      throw new AppError("Missing required order information", BAD_REQUEST);
     }
 
-    const subtotal = product.price * item.quantity;
-    totalPrice += subtotal;
-
-    orderProducts.push({
-      productId: product._id,
-      quantity: item.quantity,
-      price: product.price,
-      name: product.name,
-      subtotal: subtotal,
+    // Create order within transaction
+    const order = await withTransaction(async (transaction) => {
+      return await OrderService.createOrderFromCart(
+        user_id,
+        { shipping_address, payment_method },
+        transaction,
+      );
     });
-  }
 
-  // Create the order
-  const order = await Order.create({
-    userId: user._id,
-    userName: user.name,
-    userEmail: user.email,
-    products: orderProducts,
-    shippingAddress,
-    paymentMethod,
-    paymentDetails: paymentMethod === "creditCard" ? paymentDetails : undefined,
-    totalPrice,
-  });
-
-  // Update product stock
-  for (const item of products) {
-    await Product.findByIdAndUpdate(item.productId, {
-      $inc: { stock: -item.quantity },
+    loggerService.log(`Order placed by user ${user_id}`, {
+      order_id: order.id,
     });
-  }
 
-  res.status(CREATED).json({
-    success: true,
-    message: ORDER_PLACED,
-    data: order,
-  });
+    res.status(CREATED).json({
+      success: true,
+      message: ORDER_PLACED || "Order placed successfully",
+      data: order,
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      return next(error);
+    }
+    loggerService.error(`Error placing order for user ${req.user.id}`, error);
+    return next(new AppError("Failed to place order", INTERNAL_SERVER_ERROR));
+  }
 });
 
 export const updateOrderStatus = catchAsync(async (req, res, next) => {
-  const { status } = req.body;
-  const order = await Order.findById(req.params.id);
+  try {
+    const { status } = req.body;
+    const order_id = req.params.id;
 
-  if (!order) {
-    return next(new AppError("Order not found", NOT_FOUND));
+    if (!status) {
+      throw new AppError("Status is required", BAD_REQUEST);
+    }
+
+    const order = await OrderService.updateOrderStatus(order_id, status);
+
+    res.status(OK).json({
+      success: true,
+      message: ORDER_UPDATED || "Order updated successfully",
+      data: order,
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      return next(error);
+    }
+    loggerService.error(`Error updating order ${req.params.id}`, error);
+    return next(new AppError("Failed to update order", INTERNAL_SERVER_ERROR));
   }
-
-  // Validate status transition
-  const validTransitions = {
-    Pending: ["Processing", "Cancelled"],
-    Processing: ["Shipped", "Cancelled"],
-    Shipped: ["Delivered"],
-    Delivered: [],
-    Cancelled: [],
-  };
-
-  if (!validTransitions[order.status].includes(status)) {
-    return next(
-      new AppError(
-        `Invalid status transition from ${order.status} to ${status}`,
-        BAD_REQUEST
-      )
-    );
-  }
-
-  order.status = status;
-  await order.save();
-
-  res.status(OK).json({
-    success: true,
-    message: ORDER_UPDATED,
-    data: order,
-  });
 });
 
 export const getAllOrders = catchAsync(async (req, res, next) => {
   try {
-    const { status, startDate, endDate } = req.query;
-    const filter = { userId: req.user._id }; // Only get orders for the current user
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
+    const offset = (page - 1) * limit;
 
-    // Add status filter if provided
-    if (status) {
-      filter.status = status;
+    const filters = {};
+    if (req.query.status) filters.status = req.query.status;
+    if (req.query.payment_status)
+      filters.payment_status = req.query.payment_status;
+
+    // If user is not admin, only return their orders
+    let result;
+    if (req.user.user_type !== "admin") {
+      result = await OrderService.getUserOrders(req.user.id, limit, offset);
+    } else {
+      result = await OrderService.getAllOrders(limit, offset, filters);
     }
-
-    // Add date range filter if provided
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
-    }
-
-    // Pagination
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    // Query the database
-    const orders = await Order.find(filter)
-      .populate({
-        path: "products.productId",
-        select: "name price image category description",
-      })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    if (!orders) {
-      return next(new AppError("No orders found", NOT_FOUND));
-    }
-
-    const total = await Order.countDocuments(filter);
 
     res.status(OK).json({
       success: true,
-      results: orders.length,
-      total,
+      total: result.count,
       page,
-      totalPages: Math.ceil(total / limit),
-      data: orders,
+      limit,
+      totalPages: Math.ceil(result.count / limit),
+      data: result.rows,
     });
   } catch (error) {
-    next(new AppError(error.message, BAD_REQUEST));
+    loggerService.error("Error getting orders", error);
+    return next(new AppError("Failed to fetch orders", INTERNAL_SERVER_ERROR));
   }
 });

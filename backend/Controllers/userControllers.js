@@ -1,7 +1,9 @@
-import Users from "../Models/userModel.js";
+import User from "../Models/User.js";
 import bcrypt from "bcrypt";
 import { catchAsync } from "../Utils/catchAsync.js";
 import * as statusCode from "../Constants/httpStatusCode.js";
+import loggerService from "../Utils/logger.js";
+import AppError from "../Utils/appError.js";
 
 export const updateProfile = catchAsync(async (req, res) => {
   const updateData = { ...req.body };
@@ -11,7 +13,7 @@ export const updateProfile = catchAsync(async (req, res) => {
     try {
       updateData.address = JSON.parse(updateData.address);
     } catch (error) {
-      console.error("Error parsing address JSON:", error);
+      loggerService.error("Error parsing address JSON", error);
       return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: "Invalid address format",
@@ -21,44 +23,58 @@ export const updateProfile = catchAsync(async (req, res) => {
 
   // Handle file upload
   if (req.file) {
-    // File path relative to the server
-    updateData.profileImage = `/uploads/${req.file.filename}`;
+    updateData.profile_image_url = `/uploads/${req.file.filename}`;
   }
 
-  const updatedUser = await Users.findByIdAndUpdate(req.user._id, updateData, {
-    new: true,
-    runValidators: true,
-  }).select("-password");
+  const updatedUser = await User.update(updateData, {
+    where: { id: req.user.id },
+    returning: true,
+    individualHooks: true,
+  });
+
+  loggerService.log(`User profile updated: ${req.user.id}`);
 
   res.status(statusCode.OK).json({
     success: true,
     message: "Profile updated successfully",
-    data: updatedUser,
+    data: updatedUser[1][0],
   });
 });
 
-export const changePassword = catchAsync(async (req, res) => {
+export const changePassword = catchAsync(async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
   const user = req.user;
 
-  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+  if (!currentPassword || !newPassword) {
+    return next(
+      new AppError(
+        "Current password and new password are required",
+        statusCode.BAD_REQUEST,
+      ),
+    );
+  }
+
+  const isPasswordValid = await user.comparePassword(currentPassword);
   if (!isPasswordValid) {
+    loggerService.warn(`Failed password change attempt for user: ${user.id}`);
     return res.status(statusCode.UNAUTHORIZED).json({
       success: false,
       message: "Current password is incorrect",
     });
   }
 
-  if (newPassword.length < 4) {
+  if (newPassword.length < 8) {
     return res.status(statusCode.BAD_REQUEST).json({
       success: false,
-      message: "Password must be at least 4 characters long",
+      message: "New password must be at least 8 characters long",
     });
   }
 
-  const hashPassword = await bcrypt.hash(newPassword, 10);
-  user.password = hashPassword;
+  // Update password (will be hashed via hook)
+  user.password_hash = newPassword;
   await user.save();
+
+  loggerService.log(`Password changed for user: ${user.id}`);
 
   res.status(statusCode.OK).json({
     success: true,
@@ -66,8 +82,15 @@ export const changePassword = catchAsync(async (req, res) => {
   });
 });
 
-export const getProfile = catchAsync(async (req, res) => {
-  const user = await Users.findById(req.user.id).select("-password");
+export const getProfile = catchAsync(async (req, res, next) => {
+  const user = await User.findByPk(req.user.id, {
+    attributes: { exclude: ["password_hash"] },
+  });
+
+  if (!user) {
+    return next(new AppError("User not found", statusCode.NOT_FOUND));
+  }
+
   res.status(statusCode.OK).json({
     success: true,
     data: user,
