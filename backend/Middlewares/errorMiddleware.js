@@ -1,5 +1,6 @@
 import { INTERNAL_SERVER_ERROR } from "../Constants/httpStatusCode.js";
 import AppError from "../Utils/appError.js";
+import loggerService from "../Utils/logger.js";
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
@@ -39,18 +40,18 @@ const globalErrorHandler = (err, req, res, next) => {
   if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
   if (error.isOperational) {
+    loggerService.warn(`API Error: ${error.message}`);
     return res.status(error.statusCode).json({
       status: error.status,
       message: error.message,
     });
   }
 
-  return next(
-    res.status(INTERNAL_SERVER_ERROR).json({
-      status: "error",
-      message: `Something went wrong! Please try again later.`,
-    })
-  );
+  loggerService.error("Unexpected error", err);
+  return res.status(INTERNAL_SERVER_ERROR).json({
+    status: "error",
+    message: "Something went wrong. Please try again later.",
+  });
 };
 
 export default globalErrorHandler;
