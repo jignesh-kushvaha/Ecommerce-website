@@ -14,23 +14,17 @@ async function seedDatabase() {
     const categoryCount = await Category.count();
     if (categoryCount > 0) {
       console.log("⚠ Categories already exist. Skipping seeding.");
-    } else {
-      const electronics = await Category.create({
-        name: "Electronics",
-        slug: "electronics",
-        description: "Electronic devices and gadgets",
-      });
-      console.log("✓ Electronics category created");
-    }
-    // Create products with variants
-    console.log("Creating products and variants...");
-
-    const productCount = await Product.count();
-
-    if (productCount > 0) {
-      console.log("⚠ Products already exist. Skipping seeding.");
       process.exit(0);
     }
+
+    const electronics = await Category.create({
+      name: "Electronics",
+      slug: "electronics",
+      description: "Electronic devices and gadgets",
+    });
+    console.log("✓ Electronics category created");
+    // Create products with variants
+    console.log("Creating products and variants...");
 
     // Product 1: iPhone 15 Pro
     const iphone15 = await Product.create({

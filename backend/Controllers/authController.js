@@ -102,7 +102,7 @@ export const login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ where: { email } });
   if (!user) {
     loggerService.warn(`Login attempt with non-existent email: ${email}`);
-    return next(new AppError("Invalid Email", 400));
+    return next(new AppError("Invalid credentials", 400));
   }
 
   const isPasswordValid = await user.comparePassword(password);

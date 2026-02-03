@@ -28,9 +28,9 @@ const Header = () => {
         try {
           const response = await getProfile();
           setName(response.data.name);
-          console.log("response.data ",response.data);
-          setIsAdmin(response.data.userType === "admin");
-          setUserType(response.data.userType);
+          console.log("response.data ", response.data);
+          setIsAdmin(response.data.user_type === "admin");
+          setUserType(response.data.user_type);
         } catch (error) {
           console.error("Error checking admin status:", error);
         }
@@ -127,19 +127,30 @@ const Header = () => {
             <Link to="/products" className="text-gray-700 hover:text-blue-500">
               Products
             </Link>
-            {isAuthenticated && userType === "customer" && (
+            {isAuthenticated && !isAdmin && (
               <Link to="/orders" className="text-gray-700 hover:text-blue-500">
                 My Orders
               </Link>
             )}
-            {isAuthenticated && userType === "customer" && (
+            {isAuthenticated && !isAdmin && (
+              <Link
+                to="/cart"
+                className="text-gray-700 hover:text-blue-500 group relative"
+              >
+                <Badge count={itemCount} showZero className="scale-125">
+                  <ShoppingCartOutlined className="text-2xl" />
+                </Badge>
+                <span className="ml-2 text-sm font-medium">Cart</span>
+              </Link>
+            )}
+            {!isAuthenticated && (
               <Link to="/cart" className="text-gray-700 hover:text-blue-500">
                 <Badge count={itemCount} showZero>
                   <ShoppingCartOutlined className="text-2xl" />
                 </Badge>
               </Link>
             )}
-            {isAuthenticated && userType === "customer" ? (
+            {isAuthenticated && !isAdmin ? (
               <Dropdown
                 menu={{ items: profileMenuItems }}
                 placement="bottomRight"
