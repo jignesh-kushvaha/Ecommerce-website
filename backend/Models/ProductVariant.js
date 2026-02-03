@@ -25,6 +25,10 @@ const ProductVariant = sequelize.define(
     color: {
       type: DataTypes.STRING(100),
     },
+    hex_color: {
+      type: DataTypes.STRING(7),
+      comment: "Hex color code (e.g., #000000 for black)",
+    },
     storage_gb: {
       type: DataTypes.INTEGER,
     },

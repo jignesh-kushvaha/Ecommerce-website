@@ -24,7 +24,7 @@ export const getProduct = catchAsync(async (req, res, next) => {
   try {
     // Parse pagination and filtering
     const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12));
     const offset = (page - 1) * limit;
 
     const filters = {
@@ -33,6 +33,7 @@ export const getProduct = catchAsync(async (req, res, next) => {
       limit,
       offset,
       search: req.query.search || null,
+      sort: req.query.sort || "-createdAt", // Default sort by newest first
     };
 
     const result = await ProductService.getAllProducts(filters);

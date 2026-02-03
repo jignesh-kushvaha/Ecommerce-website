@@ -12,7 +12,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/products:
+ * /products:
  *   get:
  *     summary: Get all products
  *     description: Retrieve a list of all active products with optional filtering and pagination
@@ -47,7 +47,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /products/{id}:
  *   get:
  *     summary: Get product by ID
  *     description: Retrieve a single product with full details
@@ -68,7 +68,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/products:
+ * /products:
  *   post:
  *     summary: Create new product
  *     description: Create a new product (admin only)
@@ -109,7 +109,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /products/{id}:
  *   patch:
  *     summary: Update product
  *     description: Update an existing product (admin only)
@@ -132,7 +132,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /products/{id}:
  *   delete:
  *     summary: Delete product
  *     description: Delete a product (admin only)

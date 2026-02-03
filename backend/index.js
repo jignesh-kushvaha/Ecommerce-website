@@ -5,11 +5,14 @@ import orderRoutes from "./Routers/orderRoutes.js";
 import authRoutes from "./Routers/authRoutes.js";
 import userRoutes from "./Routers/userRoutes.js";
 import adminRoutes from "./Routers/adminRoutes.js";
+import cartRoutes from "./Routers/cartRoutes.js";
+import paymentRoutes from "./Routers/paymentRoutes.js";
 import dotenv from "dotenv";
 import globalErrorHandler from "./Middlewares/errorMiddleware.js";
 import AppError from "./Utils/appError.js";
 import rateLimitMiddleware from "./Middlewares/rateLimitMiddleware.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import loggerService from "./Utils/logger.js";
@@ -42,8 +45,11 @@ loggerService.log(`CORS enabled for: ${corsOrigin}`);
 
 app.use(express.json());
 
+// Cookie parser for refresh token
+app.use(cookieParser());
+
 // Apply rate limiting to all API routes
-app.use("/api/", rateLimitMiddleware);
+app.use("/", rateLimitMiddleware);
 
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -61,6 +67,8 @@ app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/user", userRoutes);
+app.use("/cart", cartRoutes);
+app.use("/payments", paymentRoutes);
 app.use("/admin", adminRoutes);
 
 // Health check endpoint (exempt from rate limiting via middleware config)

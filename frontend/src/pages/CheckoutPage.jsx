@@ -70,24 +70,24 @@ const CheckoutPage = () => {
       setLoading(true);
       setError("");
 
-      // Format the products for the order
+      // Format the products for the order with variant_id (not productId)
       const products = cart.map((item) => ({
-        productId: item.id,
+        variant_id: item.variant_id,
         quantity: item.quantity,
       }));
 
-      // Create the order data
+      // Create the order data with snake_case for backend
       const orderData = {
         products,
-        shippingAddress,
-        paymentMethod,
+        shipping_address: shippingAddress,
+        payment_method: paymentMethod,
       };
 
       // Place the order
       const response = await orderService.placeOrder(orderData);
 
       // Set order ID for confirmation
-      setOrderId(response.data._id);
+      setOrderId(response.data?.id || response.data?._id);
       setOrderPlaced(true);
 
       // Clear the cart after successful order

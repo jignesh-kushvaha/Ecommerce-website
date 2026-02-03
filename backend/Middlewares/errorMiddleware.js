@@ -28,6 +28,7 @@ const handleJWTExpiredError = () =>
   new AppError("Your token has expired! Please log in again.", 401);
 
 const globalErrorHandler = (err, req, res, next) => {
+  console.log("Error Middleware:", err);
   err.statusCode = err.statusCode || INTERNAL_SERVER_ERROR;
   err.status = err.status || "error";
 

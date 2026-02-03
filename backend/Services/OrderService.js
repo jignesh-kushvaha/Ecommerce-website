@@ -40,7 +40,7 @@ class OrderService {
         return existingOrder;
       }
 
-      // Validate all variants exist and have stock
+      // Validate all variants exist and have stock with pessimistic locking
       let total_price = 0;
       const orderItems = [];
 
@@ -53,9 +53,11 @@ class OrderService {
           );
         }
 
-        // Check stock
+        // Check stock with SELECT FOR UPDATE (pessimistic lock)
         const inventory = await Inventory.findOne({
           where: { variant_id: product.variant_id },
+          ...(transaction && { transaction }),
+          lock: transaction ? "UPDATE" : undefined,
         });
 
         const available = inventory

@@ -1,6 +1,11 @@
 import { useState } from "react";
-import { Form, Input, Button, Alert, Select } from "antd";
-import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Alert, Select, Space } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -10,18 +15,30 @@ const RegisterForm = () => {
   const { register } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState([]);
   const [success, setSuccess] = useState("");
+  const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     try {
       setLoading(true);
       setError("");
+      setValidationErrors([]);
       setSuccess("");
       await register(values);
       setSuccess("Registration successful! You can now log in.");
-      // Form will be redirected to login page by the AuthContext
+      form.resetFields();
     } catch (err) {
-      setError(err.message || "Failed to register");
+      // Check if error response contains validation errors array
+      if (
+        err.response?.data?.errors &&
+        Array.isArray(err.response.data.errors)
+      ) {
+        setValidationErrors(err.response.data.errors);
+        setError(err.response.data.message || "Validation failed");
+      } else {
+        setError(err.message || "Failed to register");
+      }
     } finally {
       setLoading(false);
     }
@@ -32,14 +49,33 @@ const RegisterForm = () => {
       <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
 
       {error && (
-        <Alert message={error} type="error" showIcon className="mb-4" />
+        <div className="mb-4 space-y-2">
+          <Alert message={error} type="error" showIcon />
+          {validationErrors.length > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex gap-2 mb-2">
+                <ExclamationCircleOutlined className="text-red-600 mt-1" />
+                <span className="font-semibold text-red-700">
+                  Please fix the following errors:
+                </span>
+              </div>
+              <ul className="space-y-1 ml-6">
+                {validationErrors.map((err, idx) => (
+                  <li key={idx} className="text-red-600 text-sm">
+                    <strong>{err.field}:</strong> {err.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
 
       {success && (
         <Alert message={success} type="success" showIcon className="mb-4" />
       )}
 
-      <Form name="register" onFinish={onFinish} layout="vertical">
+      <Form name="register" form={form} onFinish={onFinish} layout="vertical">
         <Form.Item
           name="name"
           rules={[
@@ -72,33 +108,20 @@ const RegisterForm = () => {
 
         <Form.Item
           name="password"
-          rules={[
-            { required: true, message: "Please enter your password" },
-            { min: 4, message: "Password must be at least 4 characters" },
-          ]}
+          rules={[{ required: true, message: "Please enter your password" }]}
+          tooltip={{
+            title:
+              "Password must contain: 1 uppercase, 1 lowercase, 1 number, 1 special character (@$!%*?&) and be at least 8 characters",
+            icon: <ExclamationCircleOutlined />,
+          }}
         >
           <Input.Password
             prefix={<LockOutlined />}
-            placeholder="Password"
+            placeholder="Password (min 8 chars with uppercase, number, special char)"
             size="large"
             className="form-input"
           />
         </Form.Item>
-
-        {/* <Form.Item
-          name="userType"
-          rules={[{ required: true, message: "Please select user type" }]}
-          initialValue="customer"
-        >
-          <Select
-            placeholder="Select user type"
-            size="large"
-            className="form-input"
-          >
-            <Option value="customer">Customer</Option>
-            <Option value="admin">Admin</Option>
-          </Select>
-        </Form.Item> */}
 
         <Form.Item>
           <Button

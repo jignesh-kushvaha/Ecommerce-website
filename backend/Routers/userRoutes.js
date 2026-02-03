@@ -11,7 +11,7 @@ router.get("/profile", userControllers.getProfile);
 router.patch(
   "/update-profile",
   upload.single("profileImage"),
-  userControllers.updateProfile
+  userControllers.updateProfile,
 );
 router.patch("/change-password", userControllers.changePassword);
 export default router;

@@ -1,11 +1,16 @@
 import express from "express";
 import * as authControllers from "../Controllers/authController.js";
+import { protect } from "../Middlewares/authMiddleware.js";
+import {
+  validateRequest,
+  registerValidation,
+} from "../Middlewares/validationMiddleware.js";
 
 const router = express.Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
  *     summary: Register a new user
  *     description: Create a new user account with email and password
@@ -43,7 +48,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: Login user
  *     description: Authenticate user and return JWT token
@@ -74,7 +79,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/auth/forgot-password:
+ * /auth/forgot-password:
  *   post:
  *     summary: Request password reset
  *     description: Send password reset email
@@ -97,7 +102,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/auth/reset-password/{token}:
+ * /auth/reset-password/{token}:
  *   patch:
  *     summary: Reset password
  *     description: Reset user password using token
@@ -116,8 +121,14 @@ const router = express.Router();
  *         description: Invalid or expired token
  */
 
-router.post("/register", authControllers.register);
+router.post(
+  "/register",
+  validateRequest(registerValidation),
+  authControllers.register,
+);
 router.post("/login", authControllers.login);
+router.post("/refresh", authControllers.refreshAccessToken);
+router.post("/logout", protect, authControllers.logout);
 router.post("/forgot-password", authControllers.forgetPassword);
 router.patch("/reset-password/:token", authControllers.resetPassword);
 

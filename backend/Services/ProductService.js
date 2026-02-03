@@ -20,8 +20,9 @@ class ProductService {
         category_id = null,
         is_active = true,
         page = 1,
-        limit = 10,
+        limit = 12,
         search = null,
+        sort = "-createdAt",
       } = filters;
 
       const { offset } = getPaginationParams({ page, limit });
@@ -30,8 +31,29 @@ class ProductService {
       if (category_id) whereClause.category_id = category_id;
       if (search) whereClause.name = { [Op.iLike]: `%${search}%` };
 
+      // Parse sort parameter (e.g., "price", "-price", "name", "-name")
+      let orderClause = [["created_at", "DESC"]]; // Default
+      if (sort) {
+        const isDesc = sort.startsWith("-");
+        const field = isDesc ? sort.substring(1) : sort;
+        const direction = isDesc ? "DESC" : "ASC";
+
+        // Map sort fields to database columns
+        const sortMap = {
+          price: "base_price",
+          name: "name",
+          createdAt: "created_at",
+          updatedAt: "updated_at",
+          stock: "stock",
+        };
+
+        const dbField = sortMap[field] || "created_at";
+        orderClause = [[dbField, direction]];
+      }
+
       const { count, rows } = await Product.findAndCountAll({
         where: whereClause,
+        distinct: true,
         include: [
           {
             model: ProductVariant,
@@ -41,7 +63,7 @@ class ProductService {
         ],
         limit,
         offset,
-        order: [["created_at", "DESC"]],
+        order: orderClause,
       });
 
       const pagination = getPaginationMeta(page, limit, count);
@@ -50,6 +72,7 @@ class ProductService {
         page,
         limit,
         total: count,
+        sort,
       });
       return { rows, pagination, count };
     } catch (error) {

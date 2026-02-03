@@ -45,12 +45,48 @@ async function seedDatabase() {
 
     // iPhone 15 variants
     const iphoneVariants = [
-      { color: "Black", storage: 128, ram: 8, price: 999.99 },
-      { color: "Black", storage: 256, ram: 8, price: 1099.99 },
-      { color: "Black", storage: 512, ram: 8, price: 1299.99 },
-      { color: "Gold", storage: 128, ram: 8, price: 999.99 },
-      { color: "Gold", storage: 256, ram: 8, price: 1099.99 },
-      { color: "Titanium", storage: 256, ram: 8, price: 1099.99 },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 128,
+        ram: 8,
+        price: 999.99,
+      },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 256,
+        ram: 8,
+        price: 1099.99,
+      },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 512,
+        ram: 8,
+        price: 1299.99,
+      },
+      {
+        color: "Gold",
+        hex_color: "#FFD700",
+        storage: 128,
+        ram: 8,
+        price: 999.99,
+      },
+      {
+        color: "Gold",
+        hex_color: "#FFD700",
+        storage: 256,
+        ram: 8,
+        price: 1099.99,
+      },
+      {
+        color: "Titanium",
+        hex_color: "#A8A9AD",
+        storage: 256,
+        ram: 8,
+        price: 1099.99,
+      },
     ];
 
     for (const variant of iphoneVariants) {
@@ -58,6 +94,7 @@ async function seedDatabase() {
         product_id: iphone15.id,
         sku: `SKU-IP15-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
+        hex_color: variant.hex_color,
         storage_gb: variant.storage,
         ram_gb: variant.ram,
         price: variant.price,
@@ -83,11 +120,41 @@ async function seedDatabase() {
     });
 
     const galaxyVariants = [
-      { color: "Black", storage: 256, ram: 12, price: 1299.99 },
-      { color: "Black", storage: 512, ram: 12, price: 1399.99 },
-      { color: "Gray", storage: 256, ram: 12, price: 1299.99 },
-      { color: "Purple", storage: 256, ram: 12, price: 1299.99 },
-      { color: "Purple", storage: 512, ram: 12, price: 1399.99 },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 256,
+        ram: 12,
+        price: 1299.99,
+      },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 512,
+        ram: 12,
+        price: 1399.99,
+      },
+      {
+        color: "Gray",
+        hex_color: "#808080",
+        storage: 256,
+        ram: 12,
+        price: 1299.99,
+      },
+      {
+        color: "Purple",
+        hex_color: "#800080",
+        storage: 256,
+        ram: 12,
+        price: 1299.99,
+      },
+      {
+        color: "Purple",
+        hex_color: "#800080",
+        storage: 512,
+        ram: 12,
+        price: 1399.99,
+      },
     ];
 
     for (const variant of galaxyVariants) {
@@ -95,6 +162,7 @@ async function seedDatabase() {
         product_id: galaxyS24.id,
         sku: `SKU-GS24-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
+        hex_color: variant.hex_color,
         storage_gb: variant.storage,
         ram_gb: variant.ram,
         price: variant.price,
@@ -120,11 +188,41 @@ async function seedDatabase() {
     });
 
     const pixelVariants = [
-      { color: "Obsidian", storage: 128, ram: 12, price: 899.99 },
-      { color: "Obsidian", storage: 256, ram: 12, price: 999.99 },
-      { color: "Bay", storage: 128, ram: 12, price: 899.99 },
-      { color: "Bay", storage: 256, ram: 12, price: 999.99 },
-      { color: "Porcelain", storage: 256, ram: 12, price: 999.99 },
+      {
+        color: "Obsidian",
+        hex_color: "#1A1A1A",
+        storage: 128,
+        ram: 12,
+        price: 899.99,
+      },
+      {
+        color: "Obsidian",
+        hex_color: "#1A1A1A",
+        storage: 256,
+        ram: 12,
+        price: 999.99,
+      },
+      {
+        color: "Bay",
+        hex_color: "#4B9BBD",
+        storage: 128,
+        ram: 12,
+        price: 899.99,
+      },
+      {
+        color: "Bay",
+        hex_color: "#4B9BBD",
+        storage: 256,
+        ram: 12,
+        price: 999.99,
+      },
+      {
+        color: "Porcelain",
+        hex_color: "#EBE4D9",
+        storage: 256,
+        ram: 12,
+        price: 999.99,
+      },
     ];
 
     for (const variant of pixelVariants) {
@@ -132,6 +230,7 @@ async function seedDatabase() {
         product_id: pixel8.id,
         sku: `SKU-PX8-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
+        hex_color: variant.hex_color,
         storage_gb: variant.storage,
         ram_gb: variant.ram,
         price: variant.price,
@@ -157,10 +256,34 @@ async function seedDatabase() {
     });
 
     const oneplusVariants = [
-      { color: "Black", storage: 256, ram: 12, price: 799.99 },
-      { color: "Black", storage: 512, ram: 12, price: 899.99 },
-      { color: "Silky Black", storage: 256, ram: 12, price: 799.99 },
-      { color: "Silky White", storage: 512, ram: 12, price: 899.99 },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 256,
+        ram: 12,
+        price: 799.99,
+      },
+      {
+        color: "Black",
+        hex_color: "#000000",
+        storage: 512,
+        ram: 12,
+        price: 899.99,
+      },
+      {
+        color: "Silky Black",
+        hex_color: "#1F2937",
+        storage: 256,
+        ram: 12,
+        price: 799.99,
+      },
+      {
+        color: "Silky White",
+        hex_color: "#F8F8F8",
+        storage: 512,
+        ram: 12,
+        price: 899.99,
+      },
     ];
 
     for (const variant of oneplusVariants) {
@@ -168,6 +291,7 @@ async function seedDatabase() {
         product_id: oneplus12.id,
         sku: `SKU-OP12-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
+        hex_color: variant.hex_color,
         storage_gb: variant.storage,
         ram_gb: variant.ram,
         price: variant.price,

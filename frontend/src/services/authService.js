@@ -12,8 +12,9 @@ export const register = async (userData) => {
 export const login = async (credentials) => {
   try {
     const response = await api.post("/auth/login", credentials);
-    if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
+    // Store access token in localStorage (refresh token is stored in httpOnly cookie)
+    if (response.data.data?.accessToken) {
+      localStorage.setItem("accessToken", response.data.data.accessToken);
     }
     return response.data;
   } catch (error) {
@@ -41,6 +42,24 @@ export const resetPassword = async (token, password) => {
   }
 };
 
-export const logout = () => {
-  localStorage.removeItem("token");
+export const logout = async () => {
+  try {
+    await api.post("/auth/logout");
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+  localStorage.removeItem("accessToken");
+};
+
+export const refreshToken = async () => {
+  try {
+    const response = await api.post("/auth/refresh");
+    if (response.data.data?.accessToken) {
+      localStorage.setItem("accessToken", response.data.data.accessToken);
+    }
+    return response.data;
+  } catch (error) {
+    localStorage.removeItem("accessToken");
+    throw error.response?.data || error.message;
+  }
 };

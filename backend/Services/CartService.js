@@ -288,6 +288,92 @@ class CartService {
       throw new AppError("Failed to validate cart", 500);
     }
   }
+
+  /**
+   * Merge guest cart items with user's existing cart
+   * Called when user logs in with items in localStorage
+   */
+  async mergeGuestCart(user_id, guestCartItems = []) {
+    try {
+      // Get or create user's cart
+      let cart = await Cart.findOne({ where: { user_id } });
+      if (!cart) {
+        cart = await Cart.create({ user_id });
+        loggerService.log(`Created new cart for user ${user_id} during merge`);
+      }
+
+      const mergedItems = [];
+
+      for (const guestItem of guestCartItems) {
+        const { variant_id, quantity } = guestItem;
+
+        if (!variant_id || !quantity || quantity <= 0) {
+          loggerService.warn(
+            `Skipped invalid guest cart item for user ${user_id}`,
+          );
+          continue;
+        }
+
+        // Check if variant exists
+        const variant = await ProductVariant.findByPk(variant_id);
+        if (!variant) {
+          loggerService.warn(
+            `Variant ${variant_id} not found during guest cart merge for user ${user_id}`,
+          );
+          continue;
+        }
+
+        // Check if item already in user's cart
+        let existingItem = await CartItem.findOne({
+          where: { cart_id: cart.id, variant_id },
+        });
+
+        if (existingItem) {
+          // Add guest quantity to existing quantity
+          existingItem.quantity += quantity;
+          await existingItem.save();
+          loggerService.log(
+            `Updated existing cart item ${variant_id} for user ${user_id}`,
+          );
+        } else {
+          // Create new cart item
+          await CartItem.create({
+            cart_id: cart.id,
+            variant_id,
+            quantity,
+          });
+          loggerService.log(
+            `Added guest cart item ${variant_id} to user ${user_id} cart`,
+          );
+        }
+
+        mergedItems.push({
+          variant_id,
+          quantity,
+        });
+      }
+
+      // Get updated cart
+      const updatedCart = await this.getCart(user_id);
+
+      loggerService.log(
+        `Merged ${mergedItems.length} guest cart items for user ${user_id}`,
+      );
+
+      return {
+        success: true,
+        message: `Merged ${mergedItems.length} items from guest cart`,
+        cart: updatedCart,
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      loggerService.error(
+        `Error merging guest cart for user ${user_id}`,
+        error,
+      );
+      throw new AppError("Failed to merge guest cart", 500);
+    }
+  }
 }
 
 export default new CartService();

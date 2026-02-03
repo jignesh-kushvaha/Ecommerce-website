@@ -8,7 +8,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/orders:
+ * /orders:
  *   post:
  *     summary: Create new order
  *     description: Place a new order with products and shipping details
@@ -45,7 +45,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/orders/{id}:
+ * /orders/{id}:
  *   get:
  *     summary: Get order details
  *     description: Retrieve order details by ID
@@ -68,7 +68,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/orders:
+ * /orders:
  *   get:
  *     summary: Get all orders
  *     description: Retrieve user orders (admin can see all orders)
@@ -83,7 +83,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/orders/{id}:
+ * /orders/{id}:
  *   patch:
  *     summary: Update order status
  *     description: Update order status (admin only)

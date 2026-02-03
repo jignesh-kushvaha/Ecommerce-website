@@ -21,10 +21,7 @@ async function runMigrations() {
       try {
         const migrationModule = await import(`../migrations/${file}`);
         console.log(`Running migration: ${file}`);
-        await migrationModule.up(
-          sequelize.getQueryInterface(),
-          sequelize.Sequelize,
-        );
+        await migrationModule.up(sequelize.getQueryInterface(), sequelize);
         console.log(`✓ Completed: ${file}`);
       } catch (error) {
         // Check if table already exists (skip if already created)

@@ -9,6 +9,7 @@ import OrderItem from "../Models/OrderItem.js";
 import Cart from "../Models/Cart.js";
 import CartItem from "../Models/CartItem.js";
 import AuditLog from "../Models/AuditLog.js";
+import RefreshToken from "../Models/RefreshToken.js";
 
 // Define associations
 export function defineAssociations() {
@@ -60,6 +61,10 @@ export function defineAssociations() {
 
   // AuditLog associations
   AuditLog.belongsTo(User, { foreignKey: "changed_by", as: "changedByUser" });
+
+  // RefreshToken associations
+  RefreshToken.belongsTo(User, { foreignKey: "user_id", onDelete: "CASCADE" });
+  User.hasMany(RefreshToken, { foreignKey: "user_id", as: "refreshTokens" });
 }
 
 // Sync database
