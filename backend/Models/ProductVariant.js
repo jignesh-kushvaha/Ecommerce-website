@@ -9,7 +9,7 @@ const ProductVariant = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    product_id: {
+    productId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -25,14 +25,14 @@ const ProductVariant = sequelize.define(
     color: {
       type: DataTypes.STRING(100),
     },
-    hex_color: {
+    hexColor: {
       type: DataTypes.STRING(7),
       comment: "Hex color code (e.g., #000000 for black)",
     },
-    storage_gb: {
+    storageGb: {
       type: DataTypes.INTEGER,
     },
-    ram_gb: {
+    ramGb: {
       type: DataTypes.INTEGER,
     },
     price: {
@@ -41,10 +41,9 @@ const ProductVariant = sequelize.define(
     },
   },
   {
-    tableName: "product_variants",
+    tableName: "productVariants",
     timestamps: true,
-    underscored: true,
-    indexes: [{ fields: ["product_id"] }],
+    indexes: [{ fields: ["productId"] }],
   },
 );
 

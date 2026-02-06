@@ -7,7 +7,7 @@ export async function up(queryInterface, Sequelize) {
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       unique: true,
       allowNull: false,
@@ -16,17 +16,17 @@ export async function up(queryInterface, Sequelize) {
         key: "id",
       },
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
   });
 
-  await queryInterface.addIndex("carts", ["user_id"]);
+  await queryInterface.addIndex("carts", ["userId"]);
 }
 
 export async function down(queryInterface, Sequelize) {

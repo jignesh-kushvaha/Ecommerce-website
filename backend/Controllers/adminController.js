@@ -1,7 +1,7 @@
 import { NOT_FOUND, OK } from "../Constants/httpStatusCode.js";
-import User from "../Models/userModel.js";
-import Order from "../Models/orderModel.js";
-import Product from "../Models/productModel.js";
+import User from "../Models/User.js";
+import Order from "../Models/Order.js";
+import Product from "../Models/Product.js";
 import { catchAsync } from "../Utils/catchAsync.js";
 import AppError from "../Utils/appError.js";
 

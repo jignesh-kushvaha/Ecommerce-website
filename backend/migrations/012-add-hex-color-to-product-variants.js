@@ -4,8 +4,8 @@ export async function up(queryInterface, sequelize) {
   const transaction = await sequelize.transaction();
   try {
     await queryInterface.addColumn(
-      "product_variants",
-      "hex_color",
+      "productVariants",
+      "hexColor",
       {
         type: DataTypes.STRING(7),
         allowNull: true,
@@ -15,7 +15,7 @@ export async function up(queryInterface, sequelize) {
     );
 
     await transaction.commit();
-    console.log("Migration: Added hex_color column to product_variants");
+    console.log("Migration: Added hexColor column to productVariants");
   } catch (error) {
     await transaction.rollback();
     throw error;

@@ -20,11 +20,11 @@ export async function up(queryInterface, Sequelize) {
     description: {
       type: DataTypes.TEXT,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },

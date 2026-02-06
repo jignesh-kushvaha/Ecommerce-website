@@ -1,11 +1,11 @@
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable("refresh_tokens", {
+  await queryInterface.createTable("refreshTokens", {
     id: {
       type: Sequelize.UUID,
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4,
     },
-    user_id: {
+    userId: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
@@ -19,28 +19,28 @@ export async function up(queryInterface, Sequelize) {
       allowNull: false,
       unique: true,
     },
-    expires_at: {
+    expiresAt: {
       type: Sequelize.DATE,
       allowNull: false,
     },
-    revoked_at: {
+    revokedAt: {
       type: Sequelize.DATE,
       defaultValue: null,
     },
-    ip_address: {
+    ipAddress: {
       type: Sequelize.STRING(45),
       allowNull: true,
     },
-    user_agent: {
+    userAgent: {
       type: Sequelize.TEXT,
       allowNull: true,
     },
-    created_at: {
+    createdAt: {
       type: Sequelize.DATE,
       allowNull: false,
       defaultValue: Sequelize.NOW,
     },
-    updated_at: {
+    updatedAt: {
       type: Sequelize.DATE,
       allowNull: false,
       defaultValue: Sequelize.NOW,
@@ -48,11 +48,11 @@ export async function up(queryInterface, Sequelize) {
   });
 
   // Add indexes
-  await queryInterface.addIndex("refresh_tokens", ["user_id"]);
-  await queryInterface.addIndex("refresh_tokens", ["token"]);
-  await queryInterface.addIndex("refresh_tokens", ["expires_at"]);
+  await queryInterface.addIndex("refreshTokens", ["userId"]);
+  await queryInterface.addIndex("refreshTokens", ["token"]);
+  await queryInterface.addIndex("refreshTokens", ["expiresAt"]);
 }
 
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable("refresh_tokens");
+  await queryInterface.dropTable("refreshTokens");
 }

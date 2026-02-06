@@ -17,8 +17,8 @@ class ProductService {
   async getAllProducts(filters = {}) {
     try {
       const {
-        category_id = null,
-        is_active = true,
+        categoryId = null,
+        isActive = true,
         page = 1,
         limit = 12,
         search = null,
@@ -27,12 +27,12 @@ class ProductService {
 
       const { offset } = getPaginationParams({ page, limit });
 
-      const whereClause = { is_active };
-      if (category_id) whereClause.category_id = category_id;
+      const whereClause = { isActive };
+      if (categoryId) whereClause.categoryId = categoryId;
       if (search) whereClause.name = { [Op.iLike]: `%${search}%` };
 
       // Parse sort parameter (e.g., "price", "-price", "name", "-name")
-      let orderClause = [["created_at", "DESC"]]; // Default
+      let orderClause = [["createdAt", "DESC"]]; // Default
       if (sort) {
         const isDesc = sort.startsWith("-");
         const field = isDesc ? sort.substring(1) : sort;
@@ -40,14 +40,14 @@ class ProductService {
 
         // Map sort fields to database columns
         const sortMap = {
-          price: "base_price",
+          price: "basePrice",
           name: "name",
-          createdAt: "created_at",
-          updatedAt: "updated_at",
+          createdAt: "createdAt",
+          updatedAt: "updatedAt",
           stock: "stock",
         };
 
-        const dbField = sortMap[field] || "created_at";
+        const dbField = sortMap[field] || "createdAt";
         orderClause = [[dbField, direction]];
       }
 
@@ -84,9 +84,9 @@ class ProductService {
   /**
    * Get single product by ID
    */
-  async getProductById(product_id) {
+  async getProductById(productId) {
     try {
-      const product = await Product.findByPk(product_id, {
+      const product = await Product.findByPk(productId, {
         include: [
           {
             model: ProductVariant,
@@ -100,11 +100,11 @@ class ProductService {
         throw new AppError("Product not found", 404);
       }
 
-      loggerService.log(`Retrieved product ${product_id}`);
+      loggerService.log(`Retrieved product ${productId}`);
       return product;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error getting product ${product_id}`, error);
+      loggerService.error(`Error getting product ${productId}`, error);
       throw new AppError("Failed to fetch product", 500);
     }
   }
@@ -114,11 +114,11 @@ class ProductService {
    */
   async createProduct(productData) {
     try {
-      const { name, slug, base_price, category_id, description, is_active } =
+      const { name, slug, basePrice, categoryId, description, isActive } =
         productData;
 
       // Validate category exists
-      const category = await Category.findByPk(category_id);
+      const category = await Category.findByPk(categoryId);
       if (!category) {
         throw new AppError("Category not found", 404);
       }
@@ -126,10 +126,10 @@ class ProductService {
       const product = await Product.create({
         name,
         slug,
-        base_price,
-        category_id,
+        basePrice,
+        categoryId,
         description,
-        is_active: is_active !== false,
+        isActive: isActive !== false,
       });
 
       loggerService.log(`Created product ${product.id}`, { name });
@@ -144,30 +144,30 @@ class ProductService {
   /**
    * Update product
    */
-  async updateProduct(product_id, updateData) {
+  async updateProduct(productId, updateData) {
     try {
-      const product = await Product.findByPk(product_id);
+      const product = await Product.findByPk(productId);
       if (!product) {
         throw new AppError("Product not found", 404);
       }
 
-      // If category_id is being changed, validate it exists
+      // If categoryId is being changed, validate it exists
       if (
-        updateData.category_id &&
-        updateData.category_id !== product.category_id
+        updateData.categoryId &&
+        updateData.categoryId !== product.categoryId
       ) {
-        const category = await Category.findByPk(updateData.category_id);
+        const category = await Category.findByPk(updateData.categoryId);
         if (!category) {
           throw new AppError("Category not found", 404);
         }
       }
 
       await product.update(updateData);
-      loggerService.log(`Updated product ${product_id}`, updateData);
+      loggerService.log(`Updated product ${productId}`, updateData);
       return product;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error updating product ${product_id}`, error);
+      loggerService.error(`Error updating product ${productId}`, error);
       throw new AppError("Failed to update product", 500);
     }
   }
@@ -175,19 +175,19 @@ class ProductService {
   /**
    * Delete product (soft delete)
    */
-  async deleteProduct(product_id) {
+  async deleteProduct(productId) {
     try {
-      const product = await Product.findByPk(product_id);
+      const product = await Product.findByPk(productId);
       if (!product) {
         throw new AppError("Product not found", 404);
       }
 
-      await product.update({ is_active: false });
-      loggerService.log(`Soft deleted product ${product_id}`);
+      await product.update({ isActive: false });
+      loggerService.log(`Soft deleted product ${productId}`);
       return { success: true, message: "Product deleted" };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error deleting product ${product_id}`, error);
+      loggerService.error(`Error deleting product ${productId}`, error);
       throw new AppError("Failed to delete product", 500);
     }
   }
@@ -195,10 +195,10 @@ class ProductService {
   /**
    * Get products by category
    */
-  async getProductsByCategory(category_id, limit = 10, offset = 0) {
+  async getProductsByCategory(categoryId, limit = 10, offset = 0) {
     try {
       const products = await Product.findAndCountAll({
-        where: { category_id, is_active: true },
+        where: { categoryId, isActive: true },
         include: [
           {
             model: ProductVariant,
@@ -210,12 +210,12 @@ class ProductService {
       });
 
       loggerService.log(
-        `Retrieved ${products.count} products for category ${category_id}`,
+        `Retrieved ${products.count} products for category ${categoryId}`,
       );
       return products;
     } catch (error) {
       loggerService.error(
-        `Error getting products for category ${category_id}`,
+        `Error getting products for category ${categoryId}`,
         error,
       );
       throw new AppError("Failed to fetch products", 500);
@@ -229,7 +229,7 @@ class ProductService {
     try {
       const products = await Product.findAndCountAll({
         where: {
-          is_active: true,
+          isActive: true,
           [sequelize.Op.or]: [
             { name: { [sequelize.Op.iLike]: `%${query}%` } },
             { description: { [sequelize.Op.iLike]: `%${query}%` } },

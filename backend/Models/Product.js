@@ -10,7 +10,7 @@ const Product = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    category_id: {
+    categoryId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -34,11 +34,11 @@ const Product = sequelize.define(
     brand: {
       type: DataTypes.STRING(100),
     },
-    base_price: {
+    basePrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
-    is_active: {
+    isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
@@ -46,7 +46,6 @@ const Product = sequelize.define(
   {
     tableName: "products",
     timestamps: true,
-    underscored: true,
     hooks: {
       afterCreate: async (product, options) => {
         await createAuditLog(
@@ -92,8 +91,8 @@ const Product = sequelize.define(
       },
     },
     indexes: [
-      { fields: ["category_id"] },
-      { fields: ["is_active", "category_id"] },
+      { fields: ["categoryId"] },
+      { fields: ["isActive", "categoryId"] },
     ],
   },
 );

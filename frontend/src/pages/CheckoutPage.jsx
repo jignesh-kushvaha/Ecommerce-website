@@ -72,7 +72,7 @@ const CheckoutPage = () => {
 
       // Format the products for the order with variant_id (not productId)
       const products = cart.map((item) => ({
-        variant_id: item.variant_id,
+        variantId: item.variantId,
         quantity: item.quantity,
       }));
 

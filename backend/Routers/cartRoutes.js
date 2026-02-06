@@ -42,10 +42,10 @@ router.get("/", cartControllers.getCart);
  *           schema:
  *             type: object
  *             required:
- *               - variant_id
+ *               - variantId
  *               - quantity
  *             properties:
- *               variant_id:
+ *               variantId:
  *                 type: integer
  *               quantity:
  *                 type: integer
@@ -174,10 +174,10 @@ router.post("/validate", cartControllers.validateCart);
  *                 items:
  *                   type: object
  *                   required:
- *                     - variant_id
+ *                     - variantId
  *                     - quantity
  *                   properties:
- *                     variant_id:
+ *                     variantId:
  *                       type: integer
  *                     quantity:
  *                       type: integer

@@ -1,17 +1,17 @@
 import { DataTypes } from "sequelize";
 
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable("audit_logs", {
+  await queryInterface.createTable("auditLogs", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    entity_type: {
+    entityType: {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    entity_id: {
+    entityId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -19,29 +19,29 @@ export async function up(queryInterface, Sequelize) {
       type: DataTypes.ENUM("create", "update", "delete"),
       allowNull: false,
     },
-    changed_by: {
+    changedBy: {
       type: DataTypes.INTEGER,
       references: {
         model: "users",
         key: "id",
       },
     },
-    old_values: {
+    oldValues: {
       type: DataTypes.JSONB,
     },
-    new_values: {
+    newValues: {
       type: DataTypes.JSONB,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
   });
 
-  await queryInterface.addIndex("audit_logs", ["entity_type", "entity_id"]);
-  await queryInterface.addIndex("audit_logs", ["created_at"]);
+  await queryInterface.addIndex("auditLogs", ["entityType", "entityId"]);
+  await queryInterface.addIndex("auditLogs", ["createdAt"]);
 }
 
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable("audit_logs");
+  await queryInterface.dropTable("auditLogs");
 }

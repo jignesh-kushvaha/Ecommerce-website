@@ -7,7 +7,7 @@ export async function up(queryInterface, Sequelize) {
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -15,7 +15,7 @@ export async function up(queryInterface, Sequelize) {
         key: "id",
       },
     },
-    order_number: {
+    orderNumber: {
       type: DataTypes.STRING(50),
       unique: true,
       allowNull: false,
@@ -30,58 +30,58 @@ export async function up(queryInterface, Sequelize) {
       ),
       defaultValue: "pending",
     },
-    payment_method: {
+    paymentMethod: {
       type: DataTypes.ENUM("credit_card", "paypal", "bank_transfer"),
     },
-    payment_status: {
+    paymentStatus: {
       type: DataTypes.ENUM("pending", "completed", "failed"),
       defaultValue: "pending",
     },
-    total_amount: {
+    totalAmount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
     },
-    idempotency_key: {
+    idempotencyKey: {
       type: DataTypes.UUID,
       unique: true,
     },
-    shipping_name: {
+    shippingName: {
       type: DataTypes.STRING(255),
     },
-    shipping_email: {
+    shippingEmail: {
       type: DataTypes.STRING(255),
     },
-    shipping_phone: {
+    shippingPhone: {
       type: DataTypes.STRING(20),
     },
-    shipping_street: {
+    shippingStreet: {
       type: DataTypes.STRING(255),
     },
-    shipping_city: {
+    shippingCity: {
       type: DataTypes.STRING(100),
     },
-    shipping_state: {
+    shippingState: {
       type: DataTypes.STRING(100),
     },
-    shipping_country: {
+    shippingCountry: {
       type: DataTypes.STRING(100),
     },
-    shipping_postal_code: {
+    shippingPostalCode: {
       type: DataTypes.STRING(20),
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
   });
 
-  await queryInterface.addIndex("orders", ["user_id", "status"]);
+  await queryInterface.addIndex("orders", ["userId", "status"]);
   await queryInterface.addIndex("orders", ["status"]);
-  await queryInterface.addIndex("orders", ["created_at"]);
+  await queryInterface.addIndex("orders", ["createdAt"]);
 }
 
 export async function down(queryInterface, Sequelize) {

@@ -12,7 +12,7 @@ export async function up(queryInterface, Sequelize) {
       allowNull: false,
       unique: true,
     },
-    password_hash: {
+    passwordHash: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -20,14 +20,14 @@ export async function up(queryInterface, Sequelize) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    phone_number: {
+    phoneNumber: {
       type: DataTypes.STRING,
     },
-    user_type: {
+    userType: {
       type: DataTypes.ENUM("admin", "customer"),
       defaultValue: "customer",
     },
-    profile_image_url: {
+    profileImageUrl: {
       type: DataTypes.STRING,
     },
     street: {
@@ -42,14 +42,14 @@ export async function up(queryInterface, Sequelize) {
     country: {
       type: DataTypes.STRING,
     },
-    postal_code: {
+    postalCode: {
       type: DataTypes.STRING,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },

@@ -9,7 +9,7 @@ const CartItem = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    cart_id: {
+    cartId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -17,11 +17,11 @@ const CartItem = sequelize.define(
         key: "id",
       },
     },
-    variant_id: {
+    variantId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "product_variants",
+        model: "productVariants",
         key: "id",
       },
     },
@@ -31,10 +31,9 @@ const CartItem = sequelize.define(
     },
   },
   {
-    tableName: "cart_items",
+    tableName: "cartItems",
     timestamps: true,
-    underscored: true,
-    indexes: [{ fields: ["cart_id"] }],
+    indexes: [{ fields: ["cartId"] }],
   },
 );
 

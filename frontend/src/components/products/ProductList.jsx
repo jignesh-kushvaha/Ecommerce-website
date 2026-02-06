@@ -58,7 +58,7 @@ const ProductList = () => {
         };
 
         if (category) {
-          params.category_id = category;
+          params.categoryId = category;
         }
 
         if (searchQuery) {

@@ -14,57 +14,54 @@ import RefreshToken from "../Models/RefreshToken.js";
 // Define associations
 export function defineAssociations() {
   // User associations
-  User.hasMany(Order, { foreignKey: "user_id", onDelete: "CASCADE" });
-  User.hasOne(Cart, { foreignKey: "user_id", onDelete: "CASCADE" });
-  User.hasMany(AuditLog, { foreignKey: "changed_by", as: "auditLogs" });
+  User.hasMany(Order, { foreignKey: "userId", onDelete: "CASCADE" });
+  User.hasOne(Cart, { foreignKey: "userId", onDelete: "CASCADE" });
+  User.hasMany(AuditLog, { foreignKey: "changedBy", as: "auditLogs" });
 
   // Category associations
-  Category.hasMany(Product, { foreignKey: "category_id", onDelete: "CASCADE" });
+  Category.hasMany(Product, { foreignKey: "categoryId", onDelete: "CASCADE" });
 
   // Product associations
-  Product.belongsTo(Category, { foreignKey: "category_id" });
+  Product.belongsTo(Category, { foreignKey: "categoryId" });
   Product.hasMany(ProductVariant, {
-    foreignKey: "product_id",
+    foreignKey: "productId",
     onDelete: "CASCADE",
   });
 
   // ProductVariant associations
-  ProductVariant.belongsTo(Product, { foreignKey: "product_id" });
+  ProductVariant.belongsTo(Product, { foreignKey: "productId" });
   ProductVariant.hasOne(Inventory, {
-    foreignKey: "variant_id",
+    foreignKey: "variantId",
     onDelete: "CASCADE",
   });
-  ProductVariant.hasMany(OrderItem, { foreignKey: "variant_id" });
+  ProductVariant.hasMany(OrderItem, { foreignKey: "variantId" });
   ProductVariant.hasMany(CartItem, {
-    foreignKey: "variant_id",
+    foreignKey: "variantId",
     onDelete: "CASCADE",
   });
 
   // Inventory associations
-  Inventory.belongsTo(ProductVariant, { foreignKey: "variant_id" });
+  Inventory.belongsTo(ProductVariant, { foreignKey: "variantId" });
 
   // Order associations
-  Order.belongsTo(User, { foreignKey: "user_id" });
-  Order.hasMany(OrderItem, { foreignKey: "order_id", onDelete: "CASCADE" });
-
+  Order.belongsTo(User, { foreignKey: "userId" });
+  Order.hasMany(OrderItem, { foreignKey: "orderId", onDelete: "CASCADE" });
   // OrderItem associations
-  OrderItem.belongsTo(Order, { foreignKey: "order_id" });
-  OrderItem.belongsTo(ProductVariant, { foreignKey: "variant_id" });
+  OrderItem.belongsTo(Order, { foreignKey: "orderId" });
+  OrderItem.belongsTo(ProductVariant, { foreignKey: "variantId" });
 
   // Cart associations
-  Cart.belongsTo(User, { foreignKey: "user_id" });
-  Cart.hasMany(CartItem, { foreignKey: "cart_id", onDelete: "CASCADE" });
-
+  Cart.belongsTo(User, { foreignKey: "userId" });
+  Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE" });
   // CartItem associations
-  CartItem.belongsTo(Cart, { foreignKey: "cart_id" });
-  CartItem.belongsTo(ProductVariant, { foreignKey: "variant_id" });
+  CartItem.belongsTo(Cart, { foreignKey: "cartId" });
+  CartItem.belongsTo(ProductVariant, { foreignKey: "variantId" });
 
   // AuditLog associations
-  AuditLog.belongsTo(User, { foreignKey: "changed_by", as: "changedByUser" });
-
+  AuditLog.belongsTo(User, { foreignKey: "changedBy", as: "changedByUser" });
   // RefreshToken associations
-  RefreshToken.belongsTo(User, { foreignKey: "user_id", onDelete: "CASCADE" });
-  User.hasMany(RefreshToken, { foreignKey: "user_id", as: "refreshTokens" });
+  RefreshToken.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+  User.hasMany(RefreshToken, { foreignKey: "userId", as: "refreshTokens" });
 }
 
 // Sync database

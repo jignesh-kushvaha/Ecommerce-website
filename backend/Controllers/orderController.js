@@ -32,25 +32,25 @@ export const getOrderDetails = catchAsync(async (req, res, next) => {
 
 export const placeOrder = catchAsync(async (req, res, next) => {
   try {
-    const { shipping_address, payment_method } = req.body;
-    const user_id = req.user.id;
+    const { shippingAddress, paymentMethod } = req.body;
+    const userId = req.user.id;
 
     // Validate required fields
-    if (!shipping_address || !payment_method) {
+    if (!shippingAddress || !paymentMethod) {
       throw new AppError("Missing required order information", BAD_REQUEST);
     }
 
     // Create order within transaction
     const order = await withTransaction(async (transaction) => {
       return await OrderService.createOrderFromCart(
-        user_id,
-        { shipping_address, payment_method },
+        userId,
+        { shippingAddress, paymentMethod },
         transaction,
       );
     });
 
-    loggerService.log(`Order placed by user ${user_id}`, {
-      order_id: order.id,
+    loggerService.log(`Order placed by user ${userId}`, {
+      orderId: order.id,
     });
 
     res.status(CREATED).json({
@@ -70,13 +70,13 @@ export const placeOrder = catchAsync(async (req, res, next) => {
 export const updateOrderStatus = catchAsync(async (req, res, next) => {
   try {
     const { status } = req.body;
-    const order_id = req.params.id;
+    const orderId = req.params.id;
 
     if (!status) {
       throw new AppError("Status is required", BAD_REQUEST);
     }
 
-    const order = await OrderService.updateOrderStatus(order_id, status);
+    const order = await OrderService.updateOrderStatus(orderId, status);
 
     res.status(OK).json({
       success: true,
@@ -100,12 +100,12 @@ export const getAllOrders = catchAsync(async (req, res, next) => {
 
     const filters = {};
     if (req.query.status) filters.status = req.query.status;
-    if (req.query.payment_status)
-      filters.payment_status = req.query.payment_status;
+    if (req.query.paymentStatus)
+      filters.paymentStatus = req.query.paymentStatus;
 
     // If user is not admin, only return their orders
     let result;
-    if (req.user.user_type !== "admin") {
+    if (req.user.userType !== "admin") {
       result = await OrderService.getUserOrders(req.user.id, limit, offset);
     } else {
       result = await OrderService.getAllOrders(limit, offset, filters);

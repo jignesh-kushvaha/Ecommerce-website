@@ -19,77 +19,77 @@ class OrderService {
   /**
    * Place a new order (with transaction support)
    */
-  async createOrder(user_id, orderData, transaction = null) {
+  async createOrder(userId, orderData, transaction = null) {
     try {
       const {
-        products, // Array of {variant_id, quantity}
-        shipping_address,
-        payment_method,
-        idempotency_key = uuidv4(),
+        products, // Array of {variantId, quantity}
+        shippingAddress,
+        paymentMethod,
+        idempotencyKey = uuidv4(),
       } = orderData;
 
       // Check for duplicate order (idempotency)
       const existingOrder = await Order.findOne({
-        where: { idempotency_key },
+        where: { idempotencyKey },
       });
 
       if (existingOrder) {
         loggerService.warn(
-          `Duplicate order attempt with key ${idempotency_key}`,
+          `Duplicate order attempt with key ${idempotencyKey}`,
         );
         return existingOrder;
       }
 
       // Validate all variants exist and have stock with pessimistic locking
-      let total_price = 0;
+      let totalPrice = 0;
       const orderItems = [];
 
       for (const product of products) {
-        const variant = await ProductVariant.findByPk(product.variant_id);
+        const variant = await ProductVariant.findByPk(product.variantId);
         if (!variant) {
           throw new AppError(
-            `Product variant ${product.variant_id} not found`,
+            `Product variant ${product.variantId} not found`,
             404,
           );
         }
 
         // Check stock with SELECT FOR UPDATE (pessimistic lock)
         const inventory = await Inventory.findOne({
-          where: { variant_id: product.variant_id },
+          where: { variantId: product.variantId },
           ...(transaction && { transaction }),
           lock: transaction ? "UPDATE" : undefined,
         });
 
         const available = inventory
-          ? inventory.quantity_available - inventory.quantity_reserved
+          ? inventory.quantityAvailable - inventory.quantityReserved
           : 0;
 
         if (available < product.quantity) {
           throw new AppError(
-            `Insufficient stock for variant ${product.variant_id}. Available: ${available}`,
+            `Insufficient stock for variant ${product.variantId}. Available: ${available}`,
             400,
           );
         }
 
         orderItems.push({
-          variant_id: product.variant_id,
+          variantId: product.variantId,
           quantity: product.quantity,
           price: variant.price,
         });
 
-        total_price += variant.price * product.quantity;
+        totalPrice += variant.price * product.quantity;
       }
 
       // Create order
       const order = await Order.create(
         {
-          user_id,
-          idempotency_key,
+          userId,
+          idempotencyKey,
           status: "pending",
-          payment_status: "pending",
-          payment_method,
-          total_price,
-          shipping_address,
+          paymentStatus: "pending",
+          paymentMethod,
+          totalPrice,
+          shippingAddress,
         },
         transaction ? { transaction } : {},
       );
@@ -98,37 +98,37 @@ class OrderService {
       for (const item of orderItems) {
         await OrderItem.create(
           {
-            order_id: order.id,
-            variant_id: item.variant_id,
+            orderId: order.id,
+            variantId: item.variantId,
             quantity: item.quantity,
-            price: item.price,
+            unitPrice: item.price,
           },
           transaction ? { transaction } : {},
         );
 
         // Reserve inventory
         const inventory = await Inventory.findOne({
-          where: { variant_id: item.variant_id },
+          where: { variantId: item.variantId },
         });
 
         if (inventory) {
           await inventory.increment(
-            "quantity_reserved",
+            "quantityReserved",
             { by: item.quantity },
             transaction ? { transaction } : {},
           );
         }
       }
 
-      loggerService.log(`Created order ${order.id} for user ${user_id}`, {
-        total_price,
+      loggerService.log(`Created order ${order.id} for user ${userId}`, {
+        totalPrice,
         items: orderItems.length,
       });
 
       // Send confirmation email (non-blocking)
       (async () => {
         try {
-          const user = await User.findByPk(user_id);
+          const user = await User.findByPk(userId);
           const fullOrder = await this.getOrderById(order.id);
           if (user && user.email) {
             await emailService.sendOrderConfirmation(
@@ -148,7 +148,7 @@ class OrderService {
       return order;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error creating order for user ${user_id}`, error);
+      loggerService.error(`Error creating order for user ${userId}`, error);
       throw new AppError("Failed to create order", 500);
     }
   }
@@ -156,10 +156,10 @@ class OrderService {
   /**
    * Get order by ID
    */
-  async getOrderById(order_id, user_id = null) {
+  async getOrderById(orderId, userId = null) {
     try {
-      const where = { id: order_id };
-      if (user_id) where.user_id = user_id;
+      const where = { id: orderId };
+      if (userId) where.userId = userId;
 
       const order = await Order.findOne({
         where,
@@ -170,11 +170,11 @@ class OrderService {
         throw new AppError("Order not found", 404);
       }
 
-      loggerService.log(`Retrieved order ${order_id}`);
+      loggerService.log(`Retrieved order ${orderId}`);
       return order;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error getting order ${order_id}`, error);
+      loggerService.error(`Error getting order ${orderId}`, error);
       throw new AppError("Failed to fetch order", 500);
     }
   }
@@ -182,28 +182,28 @@ class OrderService {
   /**
    * Get user's orders with pagination
    */
-  async getUserOrders(user_id, page = 1, limit = 10) {
+  async getUserOrders(userId, page = 1, limit = 10) {
     try {
       const { offset } = getPaginationParams({ page, limit });
 
       const { count, rows } = await Order.findAndCountAll({
-        where: { user_id },
+        where: { userId },
         include: [{ model: OrderItem, include: [{ model: ProductVariant }] }],
         limit,
         offset,
-        order: [["created_at", "DESC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       const pagination = getPaginationMeta(page, limit, count);
 
-      loggerService.log(`Retrieved ${rows.length} orders for user ${user_id}`, {
+      loggerService.log(`Retrieved ${rows.length} orders for user ${userId}`, {
         page,
         limit,
         total: count,
       });
       return { rows, pagination, count };
     } catch (error) {
-      loggerService.error(`Error getting orders for user ${user_id}`, error);
+      loggerService.error(`Error getting orders for user ${userId}`, error);
       throw new AppError("Failed to fetch orders", 500);
     }
   }
@@ -211,15 +211,15 @@ class OrderService {
   /**
    * Update order status
    */
-  async updateOrderStatus(order_id, status, user_id = null) {
+  async updateOrderStatus(orderId, status, userId = null) {
     try {
       const validStatuses = ["pending", "shipped", "delivered", "cancelled"];
       if (!validStatuses.includes(status)) {
         throw new AppError("Invalid order status", 400);
       }
 
-      const where = { id: order_id };
-      if (user_id) where.user_id = user_id;
+      const where = { id: orderId };
+      if (userId) where.userId = userId;
 
       const order = await Order.findOne({ where });
       if (!order) {
@@ -228,15 +228,15 @@ class OrderService {
 
       // If cancelling, release reserved inventory
       if (status === "cancelled" && order.status !== "cancelled") {
-        const orderItems = await OrderItem.findAll({ where: { order_id } });
+        const orderItems = await OrderItem.findAll({ where: { orderId } });
 
         for (const item of orderItems) {
           const inventory = await Inventory.findOne({
-            where: { variant_id: item.variant_id },
+            where: { variantId: item.variantId },
           });
 
-          if (inventory && inventory.quantity_reserved >= item.quantity) {
-            await inventory.decrement("quantity_reserved", {
+          if (inventory && inventory.quantityReserved >= item.quantity) {
+            await inventory.decrement("quantityReserved", {
               by: item.quantity,
             });
           }
@@ -244,13 +244,13 @@ class OrderService {
       }
 
       await order.update({ status });
-      loggerService.log(`Updated order ${order_id} status to ${status}`);
+      loggerService.log(`Updated order ${orderId} status to ${status}`);
 
       // Send status update email (non-blocking)
       (async () => {
         try {
-          const user = await User.findByPk(order.user_id);
-          const fullOrder = await this.getOrderById(order_id);
+          const user = await User.findByPk(order.userId);
+          const fullOrder = await this.getOrderById(orderId);
           if (user && user.email) {
             await emailService.sendOrderStatusUpdate(
               user.email,
@@ -270,7 +270,7 @@ class OrderService {
       return order;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error updating order ${order_id}`, error);
+      loggerService.error(`Error updating order ${orderId}`, error);
       throw new AppError("Failed to update order", 500);
     }
   }
@@ -278,7 +278,7 @@ class OrderService {
   /**
    * Update payment status
    */
-  async updatePaymentStatus(order_id, payment_status, user_id = null) {
+  async updatePaymentStatus(orderId, paymentStatus, userId = null) {
     try {
       const validPaymentStatuses = [
         "pending",
@@ -286,12 +286,12 @@ class OrderService {
         "failed",
         "refunded",
       ];
-      if (!validPaymentStatuses.includes(payment_status)) {
+      if (!validPaymentStatuses.includes(paymentStatus)) {
         throw new AppError("Invalid payment status", 400);
       }
 
-      const where = { id: order_id };
-      if (user_id) where.user_id = user_id;
+      const where = { id: orderId };
+      if (userId) where.userId = userId;
 
       const order = await Order.findOne({ where });
       if (!order) {
@@ -300,38 +300,38 @@ class OrderService {
 
       // If payment completed, confirm inventory
       if (
-        payment_status === "completed" &&
-        order.payment_status !== "completed"
+        paymentStatus === "completed" &&
+        order.paymentStatus !== "completed"
       ) {
-        const orderItems = await OrderItem.findAll({ where: { order_id } });
+        const orderItems = await OrderItem.findAll({ where: { orderId } });
 
         for (const item of orderItems) {
           const inventory = await Inventory.findOne({
-            where: { variant_id: item.variant_id },
+            where: { variantId: item.variantId },
           });
 
           if (inventory) {
-            await inventory.decrement("quantity_available", {
+            await inventory.decrement("quantityAvailable", {
               by: item.quantity,
             });
-            await inventory.decrement("quantity_reserved", {
+            await inventory.decrement("quantityReserved", {
               by: item.quantity,
             });
           }
         }
       }
 
-      await order.update({ payment_status });
+      await order.update({ paymentStatus });
       loggerService.log(
-        `Updated order ${order_id} payment status to ${payment_status}`,
+        `Updated order ${orderId} payment status to ${paymentStatus}`,
       );
 
       // Send payment confirmation email if payment completed (non-blocking)
-      if (payment_status === "completed") {
+      if (paymentStatus === "completed") {
         (async () => {
           try {
-            const user = await User.findByPk(order.user_id);
-            const fullOrder = await this.getOrderById(order_id);
+            const user = await User.findByPk(order.userId);
+            const fullOrder = await this.getOrderById(orderId);
             if (user && user.email) {
               await emailService.sendPaymentConfirmation(
                 user.email,
@@ -351,17 +351,11 @@ class OrderService {
       return order;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(
-        `Error updating payment for order ${order_id}`,
-        error,
-      );
+      loggerService.error(`Error updating payment for order ${orderId}`, error);
       throw new AppError("Failed to update payment status", 500);
     }
   }
 
-  /**
-   * Get all orders (admin only)
-   */
   /**
    * Get all orders (admin) with pagination and filtering
    */
@@ -371,14 +365,14 @@ class OrderService {
 
       const where = {};
       if (filters.status) where.status = filters.status;
-      if (filters.payment_status) where.payment_status = filters.payment_status;
+      if (filters.paymentStatus) where.paymentStatus = filters.paymentStatus;
 
       const { count, rows } = await Order.findAndCountAll({
         where,
         include: [{ model: OrderItem, include: [{ model: ProductVariant }] }],
         limit,
         offset,
-        order: [["created_at", "DESC"]],
+        order: [["createdAt", "DESC"]],
       });
 
       const pagination = getPaginationMeta(page, limit, count);
@@ -398,11 +392,11 @@ class OrderService {
   /**
    * Create order from cart
    */
-  async createOrderFromCart(user_id, orderData, transaction = null) {
+  async createOrderFromCart(userId, orderData, transaction = null) {
     try {
       // Get user's cart
       const cart = await Cart.findOne({
-        where: { user_id },
+        where: { userId },
         include: [{ model: CartItem }],
       });
 
@@ -412,26 +406,26 @@ class OrderService {
 
       // Convert cart items to products format
       const products = cart.CartItems.map((item) => ({
-        variant_id: item.variant_id,
+        variantId: item.variantId,
         quantity: item.quantity,
       }));
 
       // Create order
       const order = await this.createOrder(
-        user_id,
+        userId,
         { ...orderData, products },
         transaction,
       );
 
       // Clear cart after successful order
-      await CartItem.destroy({ where: { cart_id: cart.id } });
+      await CartItem.destroy({ where: { cartId: cart.id } });
 
-      loggerService.log(`Created order from cart for user ${user_id}`);
+      loggerService.log(`Created order from cart for user ${userId}`);
       return order;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error creating order from cart for user ${user_id}`,
+        `Error creating order from cart for user ${userId}`,
         error,
       );
       throw new AppError("Failed to create order from cart", 500);

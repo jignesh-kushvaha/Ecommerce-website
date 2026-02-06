@@ -31,7 +31,7 @@ const User = sequelize.define(
       unique: true,
       validate: { isEmail: true },
     },
-    password_hash: {
+    passwordHash: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -48,14 +48,14 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    phone_number: {
+    phoneNumber: {
       type: DataTypes.STRING,
     },
-    user_type: {
+    userType: {
       type: DataTypes.ENUM("admin", "customer"),
       defaultValue: "customer",
     },
-    profile_image_url: {
+    profileImageUrl: {
       type: DataTypes.STRING,
     },
     street: {
@@ -70,25 +70,24 @@ const User = sequelize.define(
     country: {
       type: DataTypes.STRING,
     },
-    postal_code: {
+    postalCode: {
       type: DataTypes.STRING,
     },
   },
   {
     tableName: "users",
     timestamps: true,
-    underscored: true,
     hooks: {
       beforeCreate: async (user) => {
-        if (user.password_hash) {
-          validatePasswordComplexity(user.password_hash);
-          user.password_hash = await bcrypt.hash(user.password_hash, 10);
+        if (user.passwordHash) {
+          validatePasswordComplexity(user.passwordHash);
+          user.passwordHash = await bcrypt.hash(user.passwordHash, 10);
         }
       },
       beforeUpdate: async (user) => {
-        if (user.changed("password_hash") && user.password_hash) {
-          validatePasswordComplexity(user.password_hash);
-          user.password_hash = await bcrypt.hash(user.password_hash, 10);
+        if (user.changed("passwordHash") && user.passwordHash) {
+          validatePasswordComplexity(user.passwordHash);
+          user.passwordHash = await bcrypt.hash(user.passwordHash, 10);
         }
       },
       afterCreate: async (user, options) => {
@@ -138,7 +137,7 @@ const User = sequelize.define(
 );
 
 User.prototype.comparePassword = async function (password) {
-  return bcrypt.compare(password, this.password_hash);
+  return bcrypt.compare(password, this.passwordHash);
 };
 
 export default User;

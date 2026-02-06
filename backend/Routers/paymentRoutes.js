@@ -57,7 +57,7 @@ router.post("/create-intent", protect, paymentControllers.createPaymentIntent);
  *                 type: integer
  *               payment_gateway_id:
  *                 type: string
- *               payment_status:
+ *               paymentStatus:
  *                 type: string
  *     responses:
  *       200:

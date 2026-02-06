@@ -7,37 +7,37 @@ export async function up(queryInterface, Sequelize) {
       primaryKey: true,
       autoIncrement: true,
     },
-    variant_id: {
+    variantId: {
       type: DataTypes.INTEGER,
       unique: true,
       allowNull: false,
       references: {
-        model: "product_variants",
+        model: "productVariants",
         key: "id",
       },
     },
-    quantity_available: {
+    quantityAvailable: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    quantity_reserved: {
+    quantityReserved: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    last_restock_at: {
+    lastRestockAt: {
       type: DataTypes.DATE,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
   });
 
-  await queryInterface.addIndex("inventory", ["variant_id"]);
+  await queryInterface.addIndex("inventory", ["variantId"]);
 }
 
 export async function down(queryInterface, Sequelize) {

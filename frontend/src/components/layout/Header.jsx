@@ -29,8 +29,8 @@ const Header = () => {
           const response = await getProfile();
           setName(response.data.name);
           console.log("response.data ", response.data);
-          setIsAdmin(response.data.user_type === "admin");
-          setUserType(response.data.user_type);
+          setIsAdmin(response.data.userType === "admin");
+          setUserType(response.data.userType);
         } catch (error) {
           console.error("Error checking admin status:", error);
         }

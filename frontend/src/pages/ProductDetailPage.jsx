@@ -165,7 +165,7 @@ const ProductDetailPage = () => {
 
   // Get selected variant stock
   const selectedVariantStock =
-    selectedVariant?.Inventory.quantity_available || 0;
+    selectedVariant?.Inventory.quantityAvailable || 0;
 
   // Get available colors
   const colors =
@@ -180,11 +180,11 @@ const ProductDetailPage = () => {
           ...new Set(
             product.ProductVariants.filter(
               (v) => v.color === selectedVariant.color,
-            ).map((v) => v.storage_gb),
+            ).map((v) => v.storageGb),
           ),
         ]
       : product.ProductVariants
-        ? [...new Set(product.ProductVariants.map((v) => v.storage_gb))]
+        ? [...new Set(product.ProductVariants.map((v) => v.storageGb))]
         : [];
 
   // Get available colors for the selected storage
@@ -192,7 +192,7 @@ const ProductDetailPage = () => {
     ? [
         ...new Set(
           product.ProductVariants.filter(
-            (v) => v.storage_gb === selectedVariant.storage_gb,
+            (v) => v.storageGb === selectedVariant.storageGb,
           ).map((v) => v.color),
         ),
       ]
@@ -330,7 +330,7 @@ const ProductDetailPage = () => {
             {/* Price Section */}
             <div className="mb-4">
               <Title level={3} className="text-red-600 my-0">
-                ₹{selectedVariant?.price || product.base_price}
+                ₹{selectedVariant?.price || product.basePrice}
               </Title>
               {product.ProductVariants &&
                 product.ProductVariants.length > 1 && (
@@ -363,7 +363,7 @@ const ProductDetailPage = () => {
                         const colorVariant = product.ProductVariants.find(
                           (v) =>
                             v.color === color &&
-                            v.storage_gb === selectedVariant?.storage_gb,
+                            v.storageGb === selectedVariant?.storageGb,
                         );
                         console.log("colorVariant", colorVariant);
                         const isAvailable = !!colorVariant;
@@ -374,7 +374,7 @@ const ProductDetailPage = () => {
                             key={color}
                             title={
                               !isAvailable
-                                ? `Not available for ${selectedVariant?.storage_gb}GB`
+                                ? `Not available for ${selectedVariant?.storageGb}GB`
                                 : color
                             }
                           >
@@ -389,8 +389,7 @@ const ProductDetailPage = () => {
                               }`}
                               style={{
                                 backgroundColor:
-                                  colorVariant?.hex_color ||
-                                  getColorCode(color),
+                                  colorVariant?.hexColor || getColorCode(color),
                               }}
                               onClick={() => {
                                 if (isAvailable && colorVariant) {
@@ -412,7 +411,7 @@ const ProductDetailPage = () => {
                       <Text strong className="text-sm">
                         Storage:{" "}
                         <span className="text-blue-600">
-                          {selectedVariant?.storage_gb}GB
+                          {selectedVariant?.storageGb}GB
                         </span>
                       </Text>
                     </div>
@@ -420,12 +419,12 @@ const ProductDetailPage = () => {
                       {storages.map((storage) => {
                         const storageVariant = product.ProductVariants.find(
                           (v) =>
-                            v.storage_gb === storage &&
+                            v.storageGb === storage &&
                             v.color === selectedVariant?.color,
                         );
                         const isAvailable = !!storageVariant;
                         const isSelected =
-                          selectedVariant?.storage_gb === storage;
+                          selectedVariant?.storageGb === storage;
 
                         return (
                           <Tooltip
@@ -470,13 +469,13 @@ const ProductDetailPage = () => {
                           {selectedVariant.sku}
                         </p>
                       </div>
-                      {selectedVariant.ram_gb && (
+                      {selectedVariant.ramGb && (
                         <div>
                           <Text type="secondary" className="text-xs">
                             RAM
                           </Text>
                           <p className="font-medium text-gray-900">
-                            {selectedVariant.ram_gb}GB
+                            {selectedVariant.ramGb}GB
                           </p>
                         </div>
                       )}

@@ -20,7 +20,7 @@ const router = express.Router();
  *       - Products
  *     parameters:
  *       - in: query
- *         name: category_id
+ *         name: categoryId
  *         schema:
  *           type: integer
  *         description: Filter by category ID
@@ -87,9 +87,9 @@ const router = express.Router();
  *                 type: string
  *               description:
  *                 type: string
- *               base_price:
+ *               basePrice:
  *                 type: number
- *               category_id:
+ *               categoryId:
  *                 type: integer
  *               brand:
  *                 type: string

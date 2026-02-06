@@ -10,7 +10,7 @@ const RefreshToken = sequelize.define(
       primaryKey: true,
       defaultValue: () => uuidv4(),
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -23,31 +23,30 @@ const RefreshToken = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    expires_at: {
+    expiresAt: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    revoked_at: {
+    revokedAt: {
       type: DataTypes.DATE,
       defaultValue: null,
     },
-    ip_address: {
+    ipAddress: {
       type: DataTypes.STRING(45), // IPv6 support
       allowNull: true,
     },
-    user_agent: {
+    userAgent: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
   },
   {
-    tableName: "refresh_tokens",
+    tableName: "refreshTokens",
     timestamps: true,
-    underscored: true,
     indexes: [
-      { fields: ["user_id"] },
+      { fields: ["userId"] },
       { fields: ["token"] },
-      { fields: ["expires_at"] },
+      { fields: ["expiresAt"] },
     ],
   },
 );

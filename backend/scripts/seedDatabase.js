@@ -28,55 +28,55 @@ async function seedDatabase() {
 
     // Product 1: iPhone 15 Pro
     const iphone15 = await Product.create({
-      category_id: electronics.id,
+      categoryId: electronics.id,
       name: "Apple iPhone 15 Pro",
       slug: "apple-iphone-15-pro",
       description: "Premium smartphone with advanced camera and A17 Pro chip",
       brand: "Apple",
-      base_price: 999.99,
-      is_active: true,
+      basePrice: 999.99,
+      isActive: true,
     });
 
     // iPhone 15 variants
     const iphoneVariants = [
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 128,
         ram: 8,
         price: 999.99,
       },
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 256,
         ram: 8,
         price: 1099.99,
       },
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 512,
         ram: 8,
         price: 1299.99,
       },
       {
         color: "Gold",
-        hex_color: "#FFD700",
+        hexColor: "#FFD700",
         storage: 128,
         ram: 8,
         price: 999.99,
       },
       {
         color: "Gold",
-        hex_color: "#FFD700",
+        hexColor: "#FFD700",
         storage: 256,
         ram: 8,
         price: 1099.99,
       },
       {
         color: "Titanium",
-        hex_color: "#A8A9AD",
+        hexColor: "#A8A9AD",
         storage: 256,
         ram: 8,
         price: 1099.99,
@@ -85,66 +85,66 @@ async function seedDatabase() {
 
     for (const variant of iphoneVariants) {
       const productVariant = await ProductVariant.create({
-        product_id: iphone15.id,
+        productId: iphone15.id,
         sku: `SKU-IP15-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
-        hex_color: variant.hex_color,
-        storage_gb: variant.storage,
-        ram_gb: variant.ram,
+        hexColor: variant.hexColor,
+        storageGb: variant.storage,
+        ramGb: variant.ram,
         price: variant.price,
       });
 
       await Inventory.create({
-        variant_id: productVariant.id,
-        quantity_available: 20,
-        quantity_reserved: 0,
+        variantId: productVariant.id,
+        quantityAvailable: 20,
+        quantityReserved: 0,
       });
     }
     console.log("✓ iPhone 15 Pro and 6 variants created");
 
     // Product 2: Samsung Galaxy S24
     const galaxyS24 = await Product.create({
-      category_id: electronics.id,
+      categoryId: electronics.id,
       name: "Samsung Galaxy S24 Ultra",
       slug: "samsung-galaxy-s24-ultra",
       description: "Flagship Android phone with Snapdragon 8 Gen 3",
       brand: "Samsung",
-      base_price: 1299.99,
-      is_active: true,
+      basePrice: 1299.99,
+      isActive: true,
     });
 
     const galaxyVariants = [
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 256,
         ram: 12,
         price: 1299.99,
       },
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 512,
         ram: 12,
         price: 1399.99,
       },
       {
         color: "Gray",
-        hex_color: "#808080",
+        hexColor: "#808080",
         storage: 256,
         ram: 12,
         price: 1299.99,
       },
       {
         color: "Purple",
-        hex_color: "#800080",
+        hexColor: "#800080",
         storage: 256,
         ram: 12,
         price: 1299.99,
       },
       {
         color: "Purple",
-        hex_color: "#800080",
+        hexColor: "#800080",
         storage: 512,
         ram: 12,
         price: 1399.99,
@@ -153,66 +153,66 @@ async function seedDatabase() {
 
     for (const variant of galaxyVariants) {
       const productVariant = await ProductVariant.create({
-        product_id: galaxyS24.id,
+        productId: galaxyS24.id,
         sku: `SKU-GS24-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
-        hex_color: variant.hex_color,
-        storage_gb: variant.storage,
-        ram_gb: variant.ram,
+        hexColor: variant.hexColor,
+        storageGb: variant.storage,
+        ramGb: variant.ram,
         price: variant.price,
       });
 
       await Inventory.create({
-        variant_id: productVariant.id,
-        quantity_available: 15,
-        quantity_reserved: 0,
+        variantId: productVariant.id,
+        quantityAvailable: 15,
+        quantityReserved: 0,
       });
     }
     console.log("✓ Samsung Galaxy S24 Ultra and 5 variants created");
 
     // Product 3: Google Pixel 8 Pro
     const pixel8 = await Product.create({
-      category_id: electronics.id,
+      categoryId: electronics.id,
       name: "Google Pixel 8 Pro",
       slug: "google-pixel-8-pro",
       description: "Google's flagship with advanced AI features",
       brand: "Google",
-      base_price: 899.99,
-      is_active: true,
+      basePrice: 899.99,
+      isActive: true,
     });
 
     const pixelVariants = [
       {
         color: "Obsidian",
-        hex_color: "#1A1A1A",
+        hexColor: "#1A1A1A",
         storage: 128,
         ram: 12,
         price: 899.99,
       },
       {
         color: "Obsidian",
-        hex_color: "#1A1A1A",
+        hexColor: "#1A1A1A",
         storage: 256,
         ram: 12,
         price: 999.99,
       },
       {
         color: "Bay",
-        hex_color: "#4B9BBD",
+        hexColor: "#4B9BBD",
         storage: 128,
         ram: 12,
         price: 899.99,
       },
       {
         color: "Bay",
-        hex_color: "#4B9BBD",
+        hexColor: "#4B9BBD",
         storage: 256,
         ram: 12,
         price: 999.99,
       },
       {
         color: "Porcelain",
-        hex_color: "#EBE4D9",
+        hexColor: "#EBE4D9",
         storage: 256,
         ram: 12,
         price: 999.99,
@@ -221,59 +221,59 @@ async function seedDatabase() {
 
     for (const variant of pixelVariants) {
       const productVariant = await ProductVariant.create({
-        product_id: pixel8.id,
+        productId: pixel8.id,
         sku: `SKU-PX8-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
-        hex_color: variant.hex_color,
-        storage_gb: variant.storage,
-        ram_gb: variant.ram,
+        hexColor: variant.hexColor,
+        storageGb: variant.storage,
+        ramGb: variant.ram,
         price: variant.price,
       });
 
       await Inventory.create({
-        variant_id: productVariant.id,
-        quantity_available: 25,
-        quantity_reserved: 0,
+        variantId: productVariant.id,
+        quantityAvailable: 25,
+        quantityReserved: 0,
       });
     }
     console.log("✓ Google Pixel 8 Pro and 5 variants created");
 
     // Product 4: OnePlus 12
     const oneplus12 = await Product.create({
-      category_id: electronics.id,
+      categoryId: electronics.id,
       name: "OnePlus 12",
       slug: "oneplus-12",
       description: "Fast charging flagship killer with 120Hz display",
       brand: "OnePlus",
-      base_price: 799.99,
-      is_active: true,
+      basePrice: 799.99,
+      isActive: true,
     });
 
     const oneplusVariants = [
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 256,
         ram: 12,
         price: 799.99,
       },
       {
         color: "Black",
-        hex_color: "#000000",
+        hexColor: "#000000",
         storage: 512,
         ram: 12,
         price: 899.99,
       },
       {
         color: "Silky Black",
-        hex_color: "#1F2937",
+        hexColor: "#1F2937",
         storage: 256,
         ram: 12,
         price: 799.99,
       },
       {
         color: "Silky White",
-        hex_color: "#F8F8F8",
+        hexColor: "#F8F8F8",
         storage: 512,
         ram: 12,
         price: 899.99,
@@ -282,19 +282,19 @@ async function seedDatabase() {
 
     for (const variant of oneplusVariants) {
       const productVariant = await ProductVariant.create({
-        product_id: oneplus12.id,
+        productId: oneplus12.id,
         sku: `SKU-OP12-${variant.color.substring(0, 3).toUpperCase()}-${variant.storage}GB`,
         color: variant.color,
-        hex_color: variant.hex_color,
-        storage_gb: variant.storage,
-        ram_gb: variant.ram,
+        hexColor: variant.hexColor,
+        storageGb: variant.storage,
+        ramGb: variant.ram,
         price: variant.price,
       });
 
       await Inventory.create({
-        variant_id: productVariant.id,
-        quantity_available: 18,
-        quantity_reserved: 0,
+        variantId: productVariant.id,
+        quantityAvailable: 18,
+        quantityReserved: 0,
       });
     }
     console.log("✓ OnePlus 12 and 4 variants created");

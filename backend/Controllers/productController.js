@@ -28,8 +28,8 @@ export const getProduct = catchAsync(async (req, res, next) => {
     const offset = (page - 1) * limit;
 
     const filters = {
-      category_id: req.query.category_id || null,
-      is_active: req.query.is_active !== "false",
+      categoryId: req.query.categoryId || null,
+      isActive: req.query.isActive !== "false",
       limit,
       offset,
       search: req.query.search || null,
@@ -59,16 +59,16 @@ export const getProduct = catchAsync(async (req, res, next) => {
 
 export const createProduct = catchAsync(async (req, res, next) => {
   try {
-    const { name, slug, base_price, category_id, description, is_active } =
+    const { name, slug, basePrice, categoryId, description, isActive } =
       req.body;
 
     const productData = {
       name,
       slug,
-      base_price: parseFloat(base_price),
-      category_id: parseInt(category_id),
+      basePrice: parseFloat(basePrice),
+      categoryId: parseInt(categoryId),
       description,
-      is_active,
+      isActive,
     };
 
     const product = await ProductService.createProduct(productData);
@@ -98,11 +98,11 @@ export const updateProduct = catchAsync(async (req, res, next) => {
     const updateData = { ...req.body };
 
     // Type conversions
-    if (updateData.base_price) {
-      updateData.base_price = parseFloat(updateData.base_price);
+    if (updateData.basePrice) {
+      updateData.basePrice = parseFloat(updateData.basePrice);
     }
-    if (updateData.category_id) {
-      updateData.category_id = parseInt(updateData.category_id);
+    if (updateData.categoryId) {
+      updateData.categoryId = parseInt(updateData.categoryId);
     }
 
     const product = await ProductService.updateProduct(product_id, updateData);

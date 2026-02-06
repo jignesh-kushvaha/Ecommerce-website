@@ -23,7 +23,7 @@ export const updateProfile = catchAsync(async (req, res) => {
 
   // Handle file upload
   if (req.file) {
-    updateData.profile_image_url = `/uploads/${req.file.filename}`;
+    updateData.profileImageUrl = `/uploads/${req.file.filename}`;
   }
 
   const updatedUser = await User.update(updateData, {

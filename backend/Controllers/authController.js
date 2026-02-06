@@ -27,11 +27,11 @@ const generateRefreshToken = async (userId, req) => {
   expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
 
   await RefreshToken.create({
-    user_id: userId,
+    userId,
     token,
-    expires_at: expiresAt,
-    ip_address: req.ip,
-    user_agent: req.get("user-agent"),
+    expiresAt,
+    ipAddress: req.ip,
+    userAgent: req.get("user-agent"),
   });
 
   return token;
@@ -51,15 +51,15 @@ export const register = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name,
     email,
-    password_hash: password,
-    user_type: userType || "customer",
-    phone_number: phoneNumber,
+    passwordHash: password,
+    userType: userType || "customer",
+    phoneNumber,
     ...(address && {
       street: address.street,
       city: address.city,
       state: address.state,
       country: address.country,
-      postal_code: address.postalCode,
+      postalCode: address.postalCode,
     }),
   });
 
@@ -85,8 +85,8 @@ export const register = catchAsync(async (req, res, next) => {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
-        user_type: newUser.user_type,
-        phone_number: newUser.phone_number,
+        userType: newUser.userType,
+        phoneNumber: newUser.phoneNumber,
       },
     },
   });
@@ -134,7 +134,7 @@ export const login = catchAsync(async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        user_type: user.user_type,
+        userType: user.userType,
       },
     },
   });
@@ -201,7 +201,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
     }
 
     // Update password (will be hashed via hook)
-    user.password_hash = password;
+    user.passwordHash = password;
     await user.save();
 
     loggerService.log(`Password reset successful for user: ${user.email}`);
@@ -237,12 +237,12 @@ export const refreshAccessToken = catchAsync(async (req, res, next) => {
     const tokenRecord = await RefreshToken.findOne({
       where: {
         token: refreshToken,
-        user_id: decoded.id,
-        revoked_at: null,
+        userId: decoded.id,
+        revokedAt: null,
       },
     });
 
-    if (!tokenRecord || tokenRecord.expires_at < new Date()) {
+    if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
       loggerService.warn(
         `Invalid/expired refresh token for user ${decoded.id}`,
       );
@@ -278,11 +278,11 @@ export const logout = catchAsync(async (req, res, next) => {
   if (refreshToken) {
     // Revoke refresh token in database
     await RefreshToken.update(
-      { revoked_at: new Date() },
+      { revokedAt: new Date() },
       {
         where: {
           token: refreshToken,
-          user_id: userId,
+          userId,
         },
       },
     );

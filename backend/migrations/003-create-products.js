@@ -7,7 +7,7 @@ export async function up(queryInterface, Sequelize) {
       primaryKey: true,
       autoIncrement: true,
     },
-    category_id: {
+    categoryId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -31,26 +31,26 @@ export async function up(queryInterface, Sequelize) {
     brand: {
       type: DataTypes.STRING(100),
     },
-    base_price: {
+    basePrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
-    is_active: {
+    isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
   });
 
-  await queryInterface.addIndex("products", ["category_id"]);
-  await queryInterface.addIndex("products", ["is_active", "category_id"]);
+  await queryInterface.addIndex("products", ["categoryId"]);
+  await queryInterface.addIndex("products", ["isActive", "categoryId"]);
 }
 
 export async function down(queryInterface, Sequelize) {

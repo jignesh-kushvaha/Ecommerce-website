@@ -9,11 +9,11 @@ const AuditLog = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    entity_type: {
+    entityType: {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    entity_id: {
+    entityId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -21,28 +21,27 @@ const AuditLog = sequelize.define(
       type: DataTypes.ENUM("create", "update", "delete"),
       allowNull: false,
     },
-    changed_by: {
+    changedBy: {
       type: DataTypes.INTEGER,
       references: {
         model: "users",
         key: "id",
       },
     },
-    old_values: {
+    oldValues: {
       type: DataTypes.JSONB,
     },
-    new_values: {
+    newValues: {
       type: DataTypes.JSONB,
     },
   },
   {
-    tableName: "audit_logs",
+    tableName: "auditLogs",
     timestamps: true,
     updatedAt: false,
-    underscored: true,
     indexes: [
-      { fields: ["entity_type", "entity_id"] },
-      { fields: ["created_at"] },
+      { fields: ["entityType", "entityId"] },
+      { fields: ["createdAt"] },
     ],
   },
 );

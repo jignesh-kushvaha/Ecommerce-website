@@ -28,13 +28,13 @@ const router = express.Router();
  *                 items:
  *                   type: object
  *                   properties:
- *                     variant_id:
+ *                     variantId:
  *                       type: integer
  *                     quantity:
  *                       type: integer
- *               shipping_address:
+ *               shippingAddress:
  *                 type: object
- *               payment_method:
+ *               paymentMethod:
  *                 type: string
  *     responses:
  *       201:

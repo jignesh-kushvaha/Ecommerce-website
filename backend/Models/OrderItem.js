@@ -9,7 +9,7 @@ const OrderItem = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    order_id: {
+    orderId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -17,11 +17,11 @@ const OrderItem = sequelize.define(
         key: "id",
       },
     },
-    variant_id: {
+    variantId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "product_variants",
+        model: "productVariants",
         key: "id",
       },
     },
@@ -29,15 +29,14 @@ const OrderItem = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    unit_price: {
+    unitPrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
   },
   {
-    tableName: "order_items",
+    tableName: "orderItems",
     timestamps: false,
-    underscored: true,
   },
 );
 

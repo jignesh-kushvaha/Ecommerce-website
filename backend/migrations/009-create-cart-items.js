@@ -1,13 +1,13 @@
 import { DataTypes } from "sequelize";
 
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable("cart_items", {
+  await queryInterface.createTable("cartItems", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    cart_id: {
+    cartId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -15,11 +15,11 @@ export async function up(queryInterface, Sequelize) {
         key: "id",
       },
     },
-    variant_id: {
+    variantId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "product_variants",
+        model: "productVariants",
         key: "id",
       },
     },
@@ -27,19 +27,19 @@ export async function up(queryInterface, Sequelize) {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    created_at: {
+    createdAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
-    updated_at: {
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
   });
 
-  await queryInterface.addIndex("cart_items", ["cart_id"]);
+  await queryInterface.addIndex("cartItems", ["cartId"]);
 }
 
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable("cart_items");
+  await queryInterface.dropTable("cartItems");
 }

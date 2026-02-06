@@ -7,10 +7,10 @@ class InventoryService {
   /**
    * Get inventory for a variant
    */
-  async getInventoryByVariantId(variant_id) {
+  async getInventoryByVariantId(variantId) {
     try {
       const inventory = await Inventory.findOne({
-        where: { variant_id },
+        where: { variantId },
         include: [{ model: ProductVariant }],
       });
 
@@ -18,12 +18,12 @@ class InventoryService {
         throw new AppError("Inventory not found", 404);
       }
 
-      loggerService.log(`Retrieved inventory for variant ${variant_id}`);
+      loggerService.log(`Retrieved inventory for variant ${variantId}`);
       return inventory;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error getting inventory for variant ${variant_id}`,
+        `Error getting inventory for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to fetch inventory", 500);
@@ -33,22 +33,22 @@ class InventoryService {
   /**
    * Check if item is in stock
    */
-  async isInStock(variant_id, quantity = 1) {
+  async isInStock(variantId, quantity = 1) {
     try {
-      const inventory = await Inventory.findOne({ where: { variant_id } });
+      const inventory = await Inventory.findOne({ where: { variantId } });
       if (!inventory) {
         return false;
       }
 
       const availableQuantity =
-        inventory.quantity_available - inventory.quantity_reserved;
+        inventory.quantityAvailable - inventory.quantityReserved;
       loggerService.debug(
-        `Checked stock for variant ${variant_id}: ${availableQuantity} available`,
+        `Checked stock for variant ${variantId}: ${availableQuantity} available`,
       );
       return availableQuantity >= quantity;
     } catch (error) {
       loggerService.error(
-        `Error checking stock for variant ${variant_id}`,
+        `Error checking stock for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to check inventory", 500);
@@ -58,22 +58,22 @@ class InventoryService {
   /**
    * Get available quantity for variant
    */
-  async getAvailableQuantity(variant_id) {
+  async getAvailableQuantity(variantId) {
     try {
-      const inventory = await Inventory.findOne({ where: { variant_id } });
+      const inventory = await Inventory.findOne({ where: { variantId } });
       if (!inventory) {
         throw new AppError("Inventory not found", 404);
       }
 
       const available =
-        inventory.quantity_available - inventory.quantity_reserved;
+        inventory.quantityAvailable - inventory.quantityReserved;
       loggerService.debug(
-        `Available quantity for variant ${variant_id}: ${available}`,
+        `Available quantity for variant ${variantId}: ${available}`,
       );
       return available;
     } catch (error) {
       loggerService.error(
-        `Error getting available quantity for variant ${variant_id}`,
+        `Error getting available quantity for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to fetch availability", 500);
@@ -84,10 +84,10 @@ class InventoryService {
    * Reserve inventory (for pending orders)
    * Used when order is placed
    */
-  async reserveInventory(variant_id, quantity, transaction = null) {
+  async reserveInventory(variantId, quantity, transaction = null) {
     try {
       const inventory = await Inventory.findOne(
-        { where: { variant_id } },
+        { where: { variantId } },
         transaction ? { transaction } : {},
       );
 
@@ -96,7 +96,7 @@ class InventoryService {
       }
 
       const availableQuantity =
-        inventory.quantity_available - inventory.quantity_reserved;
+        inventory.quantityAvailable - inventory.quantityReserved;
       if (availableQuantity < quantity) {
         throw new AppError(
           `Insufficient stock. Available: ${availableQuantity}`,
@@ -105,17 +105,17 @@ class InventoryService {
       }
 
       await inventory.increment(
-        "quantity_reserved",
+        "quantityReserved",
         { by: quantity },
         transaction ? { transaction } : {},
       );
 
-      loggerService.log(`Reserved ${quantity} units of variant ${variant_id}`);
+      loggerService.log(`Reserved ${quantity} units of variant ${variantId}`);
       return inventory;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error reserving inventory for variant ${variant_id}`,
+        `Error reserving inventory for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to reserve inventory", 500);
@@ -126,10 +126,10 @@ class InventoryService {
    * Confirm inventory (move from reserved to sold)
    * Used when order payment succeeds
    */
-  async confirmInventory(variant_id, quantity, transaction = null) {
+  async confirmInventory(variantId, quantity, transaction = null) {
     try {
       const inventory = await Inventory.findOne(
-        { where: { variant_id } },
+        { where: { variantId } },
         transaction ? { transaction } : {},
       );
 
@@ -137,28 +137,28 @@ class InventoryService {
         throw new AppError("Inventory not found", 404);
       }
 
-      if (inventory.quantity_reserved < quantity) {
+      if (inventory.quantityReserved < quantity) {
         throw new AppError("Invalid inventory operation", 400);
       }
 
       // Decrease available and reserved
       await inventory.decrement(
-        "quantity_available",
+        "quantityAvailable",
         { by: quantity },
         transaction ? { transaction } : {},
       );
       await inventory.decrement(
-        "quantity_reserved",
+        "quantityReserved",
         { by: quantity },
         transaction ? { transaction } : {},
       );
 
-      loggerService.log(`Confirmed ${quantity} units of variant ${variant_id}`);
+      loggerService.log(`Confirmed ${quantity} units of variant ${variantId}`);
       return inventory;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error confirming inventory for variant ${variant_id}`,
+        `Error confirming inventory for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to confirm inventory", 500);
@@ -169,10 +169,10 @@ class InventoryService {
    * Cancel/Release reserved inventory
    * Used when order is cancelled
    */
-  async releaseInventory(variant_id, quantity, transaction = null) {
+  async releaseInventory(variantId, quantity, transaction = null) {
     try {
       const inventory = await Inventory.findOne(
-        { where: { variant_id } },
+        { where: { variantId } },
         transaction ? { transaction } : {},
       );
 
@@ -180,22 +180,22 @@ class InventoryService {
         throw new AppError("Inventory not found", 404);
       }
 
-      if (inventory.quantity_reserved < quantity) {
+      if (inventory.quantityReserved < quantity) {
         throw new AppError("Invalid inventory operation", 400);
       }
 
       await inventory.decrement(
-        "quantity_reserved",
+        "quantityReserved",
         { by: quantity },
         transaction ? { transaction } : {},
       );
 
-      loggerService.log(`Released ${quantity} units of variant ${variant_id}`);
+      loggerService.log(`Released ${quantity} units of variant ${variantId}`);
       return inventory;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error releasing inventory for variant ${variant_id}`,
+        `Error releasing inventory for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to release inventory", 500);
@@ -210,9 +210,9 @@ class InventoryService {
       const lowStockItems = await Inventory.findAll({
         where: {
           [sequelize.Op.lt]: sequelize.where(
-            sequelize.col("quantity_available"),
+            sequelize.col("quantityAvailable"),
             "-",
-            sequelize.col("quantity_reserved"),
+            sequelize.col("quantityReserved"),
             threshold,
           ),
         },
@@ -230,22 +230,22 @@ class InventoryService {
   /**
    * Update inventory quantity
    */
-  async updateInventory(variant_id, quantity_available) {
+  async updateInventory(variantId, quantityAvailable) {
     try {
-      const inventory = await Inventory.findOne({ where: { variant_id } });
+      const inventory = await Inventory.findOne({ where: { variantId } });
       if (!inventory) {
         throw new AppError("Inventory not found", 404);
       }
 
-      await inventory.update({ quantity_available });
+      await inventory.update({ quantityAvailable });
       loggerService.log(
-        `Updated inventory for variant ${variant_id} to ${quantity_available}`,
+        `Updated inventory for variant ${variantId} to ${quantityAvailable}`,
       );
       return inventory;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error updating inventory for variant ${variant_id}`,
+        `Error updating inventory for variant ${variantId}`,
         error,
       );
       throw new AppError("Failed to update inventory", 500);

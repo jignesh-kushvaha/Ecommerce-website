@@ -10,21 +10,21 @@ class CartService {
   /**
    * Get or create cart for user
    */
-  async getOrCreateCart(user_id) {
+  async getOrCreateCart(userId) {
     try {
-      let cart = await Cart.findOne({ where: { user_id } });
+      let cart = await Cart.findOne({ where: { userId } });
 
       if (!cart) {
-        cart = await Cart.create({ user_id });
-        loggerService.log(`Created new cart for user ${user_id}`);
+        cart = await Cart.create({ userId });
+        loggerService.log(`Created new cart for user ${userId}`);
       } else {
-        loggerService.debug(`Retrieved cart for user ${user_id}`);
+        loggerService.debug(`Retrieved cart for user ${userId}`);
       }
 
       return cart;
     } catch (error) {
       loggerService.error(
-        `Error getting/creating cart for user ${user_id}`,
+        `Error getting/creating cart for user ${userId}`,
         error,
       );
       throw new AppError("Failed to access cart", 500);
@@ -34,10 +34,10 @@ class CartService {
   /**
    * Get cart with items
    */
-  async getCart(user_id) {
+  async getCart(userId) {
     try {
       const cart = await Cart.findOne({
-        where: { user_id },
+        where: { userId },
         include: [
           {
             model: CartItem,
@@ -50,11 +50,11 @@ class CartService {
         throw new AppError("Cart not found", 404);
       }
 
-      loggerService.log(`Retrieved cart for user ${user_id}`);
+      loggerService.log(`Retrieved cart for user ${userId}`);
       return cart;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error getting cart for user ${user_id}`, error);
+      loggerService.error(`Error getting cart for user ${userId}`, error);
       throw new AppError("Failed to fetch cart", 500);
     }
   }
@@ -62,20 +62,20 @@ class CartService {
   /**
    * Add item to cart
    */
-  async addToCart(user_id, variant_id, quantity) {
+  async addToCart(userId, variantId, quantity) {
     try {
       // Validate variant exists and has stock
-      const variant = await ProductVariant.findByPk(variant_id);
+      const variant = await ProductVariant.findByPk(variantId);
       if (!variant) {
         throw new AppError("Product variant not found", 404);
       }
 
       // Get or create cart
-      const cart = await this.getOrCreateCart(user_id);
+      const cart = await this.getOrCreateCart(userId);
 
       // Check if item already in cart
       let cartItem = await CartItem.findOne({
-        where: { cart_id: cart.id, variant_id },
+        where: { cartId: cart.id, variantId },
       });
 
       if (cartItem) {
@@ -83,24 +83,24 @@ class CartService {
         cartItem.quantity += quantity;
         await cartItem.save();
         loggerService.log(
-          `Updated cart item for user ${user_id}: quantity = ${cartItem.quantity}`,
+          `Updated cart item for user ${userId}: quantity = ${cartItem.quantity}`,
         );
       } else {
         // Create new cart item
         cartItem = await CartItem.create({
-          cart_id: cart.id,
-          variant_id,
+          cartId: cart.id,
+          variantId,
           quantity,
         });
         loggerService.log(
-          `Added item to cart for user ${user_id}: variant ${variant_id}, qty ${quantity}`,
+          `Added item to cart for user ${userId}: variant ${variantId}, qty ${quantity}`,
         );
       }
 
       return cartItem;
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error adding to cart for user ${user_id}`, error);
+      loggerService.error(`Error adding to cart for user ${userId}`, error);
       throw new AppError("Failed to add to cart", 500);
     }
   }
@@ -108,15 +108,15 @@ class CartService {
   /**
    * Remove item from cart
    */
-  async removeFromCart(user_id, cart_item_id) {
+  async removeFromCart(userId, cartItemId) {
     try {
-      const cart = await Cart.findOne({ where: { user_id } });
+      const cart = await Cart.findOne({ where: { userId } });
       if (!cart) {
         throw new AppError("Cart not found", 404);
       }
 
       const cartItem = await CartItem.findOne({
-        where: { id: cart_item_id, cart_id: cart.id },
+        where: { id: cartItemId, cartId: cart.id },
       });
 
       if (!cartItem) {
@@ -125,15 +125,12 @@ class CartService {
 
       await cartItem.destroy();
       loggerService.log(
-        `Removed item ${cart_item_id} from cart for user ${user_id}`,
+        `Removed item ${cartItemId} from cart for user ${userId}`,
       );
       return { success: true, message: "Item removed from cart" };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(
-        `Error removing from cart for user ${user_id}`,
-        error,
-      );
+      loggerService.error(`Error removing from cart for user ${userId}`, error);
       throw new AppError("Failed to remove from cart", 500);
     }
   }
@@ -141,19 +138,19 @@ class CartService {
   /**
    * Update cart item quantity
    */
-  async updateCartItemQuantity(user_id, cart_item_id, quantity) {
+  async updateCartItemQuantity(userId, cartItemId, quantity) {
     try {
       if (quantity <= 0) {
         throw new AppError("Quantity must be greater than 0", 400);
       }
 
-      const cart = await Cart.findOne({ where: { user_id } });
+      const cart = await Cart.findOne({ where: { userId } });
       if (!cart) {
         throw new AppError("Cart not found", 404);
       }
 
       const cartItem = await CartItem.findOne({
-        where: { id: cart_item_id, cart_id: cart.id },
+        where: { id: cartItemId, cartId: cart.id },
       });
 
       if (!cartItem) {
@@ -163,13 +160,13 @@ class CartService {
       cartItem.quantity = quantity;
       await cartItem.save();
       loggerService.log(
-        `Updated cart item ${cart_item_id} quantity to ${quantity}`,
+        `Updated cart item ${cartItemId} quantity to ${quantity}`,
       );
       return cartItem;
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error updating cart item quantity for user ${user_id}`,
+        `Error updating cart item quantity for user ${userId}`,
         error,
       );
       throw new AppError("Failed to update cart item", 500);
@@ -179,19 +176,19 @@ class CartService {
   /**
    * Clear entire cart
    */
-  async clearCart(user_id) {
+  async clearCart(userId) {
     try {
-      const cart = await Cart.findOne({ where: { user_id } });
+      const cart = await Cart.findOne({ where: { userId } });
       if (!cart) {
         throw new AppError("Cart not found", 404);
       }
 
-      await CartItem.destroy({ where: { cart_id: cart.id } });
-      loggerService.log(`Cleared cart for user ${user_id}`);
+      await CartItem.destroy({ where: { cartId: cart.id } });
+      loggerService.log(`Cleared cart for user ${userId}`);
       return { success: true, message: "Cart cleared" };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error clearing cart for user ${user_id}`, error);
+      loggerService.error(`Error clearing cart for user ${userId}`, error);
       throw new AppError("Failed to clear cart", 500);
     }
   }
@@ -199,10 +196,10 @@ class CartService {
   /**
    * Get cart total price
    */
-  async getCartTotal(user_id) {
+  async getCartTotal(userId) {
     try {
       const cart = await Cart.findOne({
-        where: { user_id },
+        where: { userId },
         include: [
           {
             model: CartItem,
@@ -224,13 +221,13 @@ class CartService {
       });
 
       loggerService.log(
-        `Cart total for user ${user_id}: $${total}, items: ${itemCount}`,
+        `Cart total for user ${userId}: $${total}, items: ${itemCount}`,
       );
       return { total, itemCount, items: cart.CartItems };
     } catch (error) {
       if (error instanceof AppError) throw error;
       loggerService.error(
-        `Error calculating cart total for user ${user_id}`,
+        `Error calculating cart total for user ${userId}`,
         error,
       );
       throw new AppError("Failed to calculate cart total", 500);
@@ -240,10 +237,10 @@ class CartService {
   /**
    * Validate cart items have stock
    */
-  async validateCartStock(user_id) {
+  async validateCartStock(userId) {
     try {
       const cart = await Cart.findOne({
-        where: { user_id },
+        where: { userId },
         include: [
           {
             model: CartItem,
@@ -260,16 +257,16 @@ class CartService {
 
       for (const cartItem of cart.CartItems) {
         const inventory = await Inventory.findOne({
-          where: { variant_id: cartItem.variant_id },
+          where: { variantId: cartItem.variantId },
         });
 
         const available = inventory
-          ? inventory.quantity_available - inventory.quantity_reserved
+          ? inventory.quantityAvailable - inventory.quantityReserved
           : 0;
 
         if (available < cartItem.quantity) {
           invalidItems.push({
-            variant_id: cartItem.variant_id,
+            variantId: cartItem.variantId,
             requested: cartItem.quantity,
             available,
           });
@@ -280,11 +277,11 @@ class CartService {
         throw new AppError("Some items are out of stock", 400);
       }
 
-      loggerService.log(`Cart validated for user ${user_id}`);
+      loggerService.log(`Cart validated for user ${userId}`);
       return { success: true, message: "Cart has valid stock" };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(`Error validating cart for user ${user_id}`, error);
+      loggerService.error(`Error validating cart for user ${userId}`, error);
       throw new AppError("Failed to validate cart", 500);
     }
   }
@@ -293,39 +290,39 @@ class CartService {
    * Merge guest cart items with user's existing cart
    * Called when user logs in with items in localStorage
    */
-  async mergeGuestCart(user_id, guestCartItems = []) {
+  async mergeGuestCart(userId, guestCartItems = []) {
     try {
       // Get or create user's cart
-      let cart = await Cart.findOne({ where: { user_id } });
+      let cart = await Cart.findOne({ where: { userId } });
       if (!cart) {
-        cart = await Cart.create({ user_id });
-        loggerService.log(`Created new cart for user ${user_id} during merge`);
+        cart = await Cart.create({ userId });
+        loggerService.log(`Created new cart for user ${userId} during merge`);
       }
 
       const mergedItems = [];
 
       for (const guestItem of guestCartItems) {
-        const { variant_id, quantity } = guestItem;
+        const { variantId, quantity } = guestItem;
 
-        if (!variant_id || !quantity || quantity <= 0) {
+        if (!variantId || !quantity || quantity <= 0) {
           loggerService.warn(
-            `Skipped invalid guest cart item for user ${user_id}`,
+            `Skipped invalid guest cart item for user ${userId}`,
           );
           continue;
         }
 
         // Check if variant exists
-        const variant = await ProductVariant.findByPk(variant_id);
+        const variant = await ProductVariant.findByPk(variantId);
         if (!variant) {
           loggerService.warn(
-            `Variant ${variant_id} not found during guest cart merge for user ${user_id}`,
+            `Variant ${variantId} not found during guest cart merge for user ${userId}`,
           );
           continue;
         }
 
         // Check if item already in user's cart
         let existingItem = await CartItem.findOne({
-          where: { cart_id: cart.id, variant_id },
+          where: { cartId: cart.id, variantId },
         });
 
         if (existingItem) {
@@ -333,31 +330,31 @@ class CartService {
           existingItem.quantity += quantity;
           await existingItem.save();
           loggerService.log(
-            `Updated existing cart item ${variant_id} for user ${user_id}`,
+            `Updated existing cart item ${variantId} for user ${userId}`,
           );
         } else {
           // Create new cart item
           await CartItem.create({
-            cart_id: cart.id,
-            variant_id,
+            cartId: cart.id,
+            variantId,
             quantity,
           });
           loggerService.log(
-            `Added guest cart item ${variant_id} to user ${user_id} cart`,
+            `Added guest cart item ${variantId} to user ${userId} cart`,
           );
         }
 
         mergedItems.push({
-          variant_id,
+          variantId,
           quantity,
         });
       }
 
       // Get updated cart
-      const updatedCart = await this.getCart(user_id);
+      const updatedCart = await this.getCart(userId);
 
       loggerService.log(
-        `Merged ${mergedItems.length} guest cart items for user ${user_id}`,
+        `Merged ${mergedItems.length} guest cart items for user ${userId}`,
       );
 
       return {
@@ -367,10 +364,7 @@ class CartService {
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
-      loggerService.error(
-        `Error merging guest cart for user ${user_id}`,
-        error,
-      );
+      loggerService.error(`Error merging guest cart for user ${userId}`, error);
       throw new AppError("Failed to merge guest cart", 500);
     }
   }

@@ -9,32 +9,31 @@ const Inventory = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    variant_id: {
+    variantId: {
       type: DataTypes.INTEGER,
       unique: true,
       allowNull: false,
       references: {
-        model: "product_variants",
+        model: "productVariants",
         key: "id",
       },
     },
-    quantity_available: {
+    quantityAvailable: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    quantity_reserved: {
+    quantityReserved: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    last_restock_at: {
+    lastRestockAt: {
       type: DataTypes.DATE,
     },
   },
   {
     tableName: "inventory",
     timestamps: true,
-    underscored: true,
-    indexes: [{ fields: ["variant_id"] }],
+    indexes: [{ fields: ["variantId"] }],
   },
 );
 

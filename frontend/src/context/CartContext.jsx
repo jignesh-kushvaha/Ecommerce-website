@@ -62,7 +62,7 @@ export const CartProvider = ({ children }) => {
         // Guest user - add to local cart
         setCart((prevCart) => {
           const existingItemIndex = prevCart.findIndex(
-            (item) => item.variant_id === product.variant_id,
+            (item) => item.variantId === product.variantId,
           );
 
           if (existingItemIndex >= 0) {
@@ -78,10 +78,10 @@ export const CartProvider = ({ children }) => {
             return [
               ...prevCart,
               {
-                variant_id: product.variant_id,
+                variantId: product.variantId,
                 id: product.id,
                 name: product.name,
-                price: product.base_price || product.price,
+                price: product.basePrice || product.price,
                 image: product.image,
                 quantity,
               },
@@ -99,7 +99,7 @@ export const CartProvider = ({ children }) => {
       console.log("Removing from backend cart - implement API call");
     } else {
       setCart((prevCart) =>
-        prevCart.filter((item) => item.variant_id !== variantId),
+        prevCart.filter((item) => item.variantId !== variantId),
       );
     }
   };
@@ -115,7 +115,7 @@ export const CartProvider = ({ children }) => {
     } else {
       setCart((prevCart) =>
         prevCart.map((item) =>
-          item.variant_id === variantId ? { ...item, quantity } : item,
+          item.variantId === variantId ? { ...item, quantity } : item,
         ),
       );
     }

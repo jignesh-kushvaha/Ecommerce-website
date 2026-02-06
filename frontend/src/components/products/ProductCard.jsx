@@ -53,7 +53,7 @@ const ProductCard = ({ product }) => {
   const variantPrices =
     product.ProductVariants && product.ProductVariants.length > 0
       ? product.ProductVariants.map((v) => parseFloat(v.price))
-      : [parseFloat(product.base_price)];
+      : [parseFloat(product.basePrice)];
 
   const minPrice = Math.min(...variantPrices);
   const maxPrice = Math.max(...variantPrices);
@@ -64,7 +64,7 @@ const ProductCard = ({ product }) => {
   const totalStock =
     product.ProductVariants && product.ProductVariants.length > 0
       ? product.ProductVariants.reduce(
-          (sum, v) => sum + (v.Inventory?.quantity_available || 0),
+          (sum, v) => sum + (v.Inventory?.quantityAvailable || 0),
           0,
         )
       : 0;
@@ -210,7 +210,7 @@ const ProductCard = ({ product }) => {
                         className="w-5 h-5 rounded-full border-2 border-gray-200"
                         style={{
                           backgroundColor:
-                            colorVariant?.hex_color || getColorCode(colorName),
+                            colorVariant?.hexColor || getColorCode(colorName),
                         }}
                       />
                     </Tooltip>

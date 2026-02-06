@@ -11,7 +11,7 @@ const Order = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -19,7 +19,7 @@ const Order = sequelize.define(
         key: "id",
       },
     },
-    order_number: {
+    orderNumber: {
       type: DataTypes.STRING(50),
       unique: true,
       allowNull: false,
@@ -34,51 +34,50 @@ const Order = sequelize.define(
       ),
       defaultValue: "pending",
     },
-    payment_method: {
+    paymentMethod: {
       type: DataTypes.ENUM("credit_card", "paypal", "bank_transfer"),
     },
-    payment_status: {
+    paymentStatus: {
       type: DataTypes.ENUM("pending", "completed", "failed"),
       defaultValue: "pending",
     },
-    total_amount: {
+    totalAmount: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: false,
     },
-    idempotency_key: {
+    idempotencyKey: {
       type: DataTypes.UUID,
       unique: true,
       defaultValue: () => uuidv4(),
     },
-    shipping_name: {
+    shippingName: {
       type: DataTypes.STRING(255),
     },
-    shipping_email: {
+    shippingEmail: {
       type: DataTypes.STRING(255),
     },
-    shipping_phone: {
+    shippingPhone: {
       type: DataTypes.STRING(20),
     },
-    shipping_street: {
+    shippingStreet: {
       type: DataTypes.STRING(255),
     },
-    shipping_city: {
+    shippingCity: {
       type: DataTypes.STRING(100),
     },
-    shipping_state: {
+    shippingState: {
       type: DataTypes.STRING(100),
     },
-    shipping_country: {
+    shippingCountry: {
       type: DataTypes.STRING(100),
     },
-    shipping_postal_code: {
+    shippingPostalCode: {
       type: DataTypes.STRING(20),
     },
   },
   {
     tableName: "orders",
     timestamps: true,
-    underscored: true,
     hooks: {
       afterCreate: async (order, options) => {
         await createAuditLog(
@@ -124,9 +123,9 @@ const Order = sequelize.define(
       },
     },
     indexes: [
-      { fields: ["user_id", "status"] },
+      { fields: ["userId", "status"] },
       { fields: ["status"] },
-      { fields: ["created_at"] },
+      { fields: ["createdAt"] },
     ],
   },
 );
