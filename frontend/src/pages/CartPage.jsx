@@ -30,7 +30,7 @@ const CartPage = () => {
         Your Shopping Cart
       </Title>
 
-      {cart.length === 0 ? (
+      {cart?.length === 0 ? (
         <div className="text-center py-8">
           <Empty
             description="Your cart is empty"

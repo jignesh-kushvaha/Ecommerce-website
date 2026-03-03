@@ -8,7 +8,7 @@
     "init-db": "node scripts/initDb.js",
     "seed": "node scripts/seedDatabase.js",
     "migrate": "node scripts/runMigrations.js",
-    "setup": "npm run init-db && npm run seed",
+    "setup": "npm run migrate && npm run init-db && npm run seed",
     "lint": "eslint .",
     "lint:fix": "eslint. --fix.",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -22,11 +22,11 @@ const ProductCard = ({ product }) => {
   const [hovered, setHovered] = useState(false);
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
+    /*     if (!isAuthenticated) {
       message.warning("Please login to add items to your cart", 2);
       navigate("/login");
       return;
-    }
+    } */
     addToCart(product);
     message.success(
       <div className="flex items-center">
@@ -81,7 +81,7 @@ const ProductCard = ({ product }) => {
   const imageUrl =
     product.images && product.images.length
       ? `${API_ENDPOINTS.base}/uploads/${product.images[0]}`
-      : "https://via.placeholder.com/300x300";
+      : "https://placehold.net/default.png";
 
   return (
     <div className="group">
@@ -133,7 +133,7 @@ const ProductCard = ({ product }) => {
             <img
               alt={product.name}
               src={imageUrl}
-              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
 
             {/* Overlay Actions - visible on hover */}

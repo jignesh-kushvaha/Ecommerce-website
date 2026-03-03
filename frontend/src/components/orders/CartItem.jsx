@@ -21,7 +21,7 @@ const CartItem = ({ item }) => {
         <DeleteOutlined className="mr-2 text-lg" />
         <span>Item removed from cart</span>
       </div>,
-      2
+      2,
     );
   };
 
@@ -38,7 +38,7 @@ const CartItem = ({ item }) => {
 
         <div className="flex-grow">
           <h3 className="text-lg font-semibold">{item.name}</h3>
-          <p className="text-gray-500">₹{item.price.toFixed(2)}</p>
+          <p className="text-gray-500">₹{Number(item.price).toFixed(2)}</p>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center mt-4 sm:mt-0">
